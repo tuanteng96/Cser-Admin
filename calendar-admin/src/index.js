@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import "./_assets/plugins/keenthemes-icons/font/ki.css";
 import './index.scss';
 import App from './App/App';
 import reportWebVitals from './reportWebVitals';

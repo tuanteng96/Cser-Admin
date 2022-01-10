@@ -1,0 +1,13 @@
+.ezs-calendar {
+    height: 100vh;
+    .fc-theme-standard {
+        height: 100%;
+    }
+    &__sidebar {
+        width: 267px;
+    }
+    &__content {
+        width: calc(100% - 267px);
+        padding-left: 20px;
+    }
+}

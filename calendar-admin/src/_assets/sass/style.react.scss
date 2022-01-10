@@ -8,3 +8,13 @@
 @import "init";
 // 2: Bootstrap/Material framework includes
 @import "~bootstrap/scss/bootstrap";
+// 3: Components
+@import "./components/utilities",
+"./components/forms",
+"./components/buttons",
+"./components/modal",
+"./components/dropdown";
+// 4: Plugin
+@import "./vendors/plugins/fullcalendar";
+@import "./vendors/plugins/react-select";
+@import "./vendors/plugins/datepicker";
