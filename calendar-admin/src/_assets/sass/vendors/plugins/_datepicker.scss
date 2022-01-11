@@ -79,7 +79,6 @@
                         &:hover {
                             background: #F3F6F9;
                         }
-                        &.react-datepicker__day--today,
                         &.react-datepicker__day--keyboard-selected {
                             position: relative;
                             background: #E1F0FF !important;
@@ -212,7 +211,6 @@
                         &:hover {
                             background: #F3F6F9;
                         }
-                        &.react-datepicker__day--today,
                         &.react-datepicker__day--selected {
                             &.react-datepicker__day--keyboard-selected {
                                 position: relative;
