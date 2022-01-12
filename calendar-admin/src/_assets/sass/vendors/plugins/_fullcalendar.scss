@@ -72,6 +72,7 @@
             @include border-radius($border-radius);
             .fc-content {
                 padding: 0.55rem 0.55rem 0.55rem 0.55rem;
+                width: 100%;
                 // &:before {
                 //     display: block;
                 //     content: " ";
@@ -94,7 +95,7 @@
                 font-weight: 500;
             }
             .fc-title {
-                font-size: 0.9rem;
+                font-size: 13px;
                 font-weight: 400;
             }
         }

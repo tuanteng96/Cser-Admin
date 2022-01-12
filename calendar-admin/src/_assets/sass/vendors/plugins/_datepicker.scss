@@ -407,13 +407,16 @@
                         line-height: 35px;
                         color: #7E8299;
                         font-size: 13px;
-                        margin: 0;
+                        margin: 2px;
                         border-radius: 4px;
                         &:hover {
                             background: #F3F6F9;
                             color: #3F4254;
                         }
-                        &.react-datepicker__day--selected {
+                        &.react-datepicker__day--selected,
+                        &.react-datepicker__day--in-selecting-range,
+                        &.react-datepicker__day--in-range,
+                        &.react-datepicker__day--keyboard-selected {
                             position: relative;
                             background: #E1F0FF !important;
                             color: #3699FF !important;
@@ -429,6 +432,14 @@
                                 right: 4px;
                             }
                         }
+                        // &.react-datepicker__day--selecting-range-start {
+                        //     background: $primary !important;
+                        //     color: $white !important;
+                        //     &::before {
+                        //         border-bottom-color: $white;
+                        //         border-top-color: $white;
+                        //     }
+                        // }
                     }
                 }
             }

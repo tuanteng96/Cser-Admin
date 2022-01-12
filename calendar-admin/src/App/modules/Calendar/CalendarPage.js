@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -9,20 +9,19 @@ import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar
 import Cookies from "js-cookie";
 import moment from "moment";
 import "../../../_assets/sass/pages/_calendar.scss";
-import { useSelector } from "react-redux";
 import CalendarCrud from "./_redux/CalendarCrud";
 
 var todayDate = moment().startOf("day");
-var YM = todayDate.format("YYYY-MM");
-var YESTERDAY = todayDate
-  .clone()
-  .subtract(1, "day")
-  .format("YYYY-MM-DD");
+// var YM = todayDate.format("YYYY-MM");
+// var YESTERDAY = todayDate
+//   .clone()
+//   .subtract(1, "day")
+//   .format("YYYY-MM-DD");
 var TODAY = todayDate.format("YYYY-MM-DD");
-var TOMORROW = todayDate
-  .clone()
-  .add(1, "day")
-  .format("YYYY-MM-DD");
+// var TOMORROW = todayDate
+//   .clone()
+//   .add(1, "day")
+//   .format("YYYY-MM-DD");
 
 const viLocales = {
   code: "vi",
@@ -41,8 +40,18 @@ const viLocales = {
   },
   weekText: "Sm",
   allDayText: "Cả ngày",
-  moreLinkText: "más",
-  noEventsText: "No hay eventos para mostrar",
+  moreLinkText: "Xem thêm",
+  noEventsText: "Không có dịch vụ",
+};
+
+const getStatusClss = (Status) => {
+  if (Status === "XAC_NHAN") {
+    return "primary";
+  }
+  if (Status === "CHUA_XAC_NHAN") {
+    return "warning";
+  }
+  return "danger";
 };
 
 function CalendarPage(props) {
@@ -50,17 +59,16 @@ function CalendarPage(props) {
   const [btnLoading, setBtnLoading] = useState({
     isBtnBooking: false,
   });
-  const { AuthStocks, AuthUser, AuthCrStockID } = useSelector(({ Auth }) => ({
-    AuthStocks: Auth.Stocks.filter((item) => item.ParentID !== 0).map(
-      (item) => ({
-        ...item,
-        value: item.ID,
-        label: item.Title,
-      })
-    ),
-    AuthUser: Auth.User,
-    AuthCrStockID: Auth.CrStockID,
-  }));
+  const [filters, setFilters] = useState(null);
+  const [initialValue, setInitialValue] = useState({});
+  const [Events, setEvents] = useState([]);
+
+  useEffect(() => {
+    if (filters) {
+      getBooking();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
 
   //Open Modal Booking
   const onOpenModal = () => {
@@ -69,6 +77,7 @@ function CalendarPage(props) {
 
   //Edit Modal Booking
   const onHideModal = () => {
+    setInitialValue({});
     setIsModal(false);
   };
 
@@ -77,35 +86,70 @@ function CalendarPage(props) {
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
     const dataPost = {
-      booking: {
-        ...values,
-        MemberID: values.MemberID.value,
-        RootIdS: values.RootIdS.map((item) => item.value).toString(),
-        UserServiceIDs: values.UserServiceIDs.map(
-          (item) => item.value
-        ).toString(),
-        BookDate: moment(values.BookDate).format("YYYY-MM-DD"),
-      },
+      booking: [
+        {
+          ...values,
+          MemberID: values.MemberID.value,
+          RootIdS: values.RootIdS.map((item) => item.value).toString(),
+          UserServiceIDs: values.UserServiceIDs.map(
+            (item) => item.value
+          ).toString(),
+          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+        },
+      ],
     };
     try {
-      const data = await CalendarCrud.postBooking(dataPost, {
+      await CalendarCrud.postBooking(dataPost, {
         CurrentStockID,
         u_id_z4aDf2,
       });
-      console.log(data);
-      setBtnLoading((prevState) => ({ ...prevState, isBtnBooking: false }));
-      onHideModal();
+      getBooking(() => {
+        setBtnLoading((prevState) => ({ ...prevState, isBtnBooking: false }));
+        onHideModal();
+      });
     } catch (error) {
       setBtnLoading((prevState) => ({ ...prevState, isBtnBooking: true }));
-      console.log(error);
     }
+  };
+
+  const getFiltersBooking = (values) => {
+    setFilters(values);
+  };
+
+  const getBooking = (fn) => {
+    const newFilters = {
+      ...filters,
+      From: filters.From ? moment(filters.From).format("YYYY-MM-DD") : "",
+      To: filters.To ? moment(filters.To).format("YYYY-MM-DD") : "",
+      Status: filters.Status ? filters.Status.value : "",
+      UserServiceIDs:
+        filters.UserServiceIDs && Array.isArray(filters.UserServiceIDs)
+          ? filters.UserServiceIDs.map((item) => item.value).toString()
+          : "",
+    };
+    CalendarCrud.getBooking(newFilters)
+      .then(({ data }) => {
+        const dataBooks = data.books.map((item) => ({
+          ...item,
+          start: item.BookDate,
+          title: item.RootTitles,
+          className: `fc-event-solid-${getStatusClss(item.Status)}`,
+        }));
+        setEvents(dataBooks);
+        fn && fn();
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
     <div className="ezs-calendar">
       <div className="container-fluid h-100">
         <div className="d-flex h-100">
-          <SidebarCalendar onOpenModal={onOpenModal} />
+          <SidebarCalendar
+            filters={filters}
+            onOpenModal={onOpenModal}
+            onSubmit={getFiltersBooking}
+          />
           <div className="ezs-calendar__content">
             <FullCalendar
               themeSystem="unthemed"
@@ -113,7 +157,7 @@ function CalendarPage(props) {
               initialDate={TODAY}
               initialView="dayGridMonth"
               aspectRatio="3"
-              editable={true}
+              editable={false}
               navLinks={true}
               plugins={[
                 dayGridPlugin,
@@ -121,7 +165,7 @@ function CalendarPage(props) {
                 timeGridPlugin,
                 listPlugin,
               ]}
-              events={[]}
+              events={Events}
               headerToolbar={{
                 left: "prev,next today",
                 center: "title",
@@ -129,7 +173,11 @@ function CalendarPage(props) {
               }}
               selectable={true}
               selectMirror={true}
-              eventClick={({ event, el }) => console.log(event)}
+              eventClick={({ event, el }) => {
+                const { _def } = event;
+                setInitialValue(_def.extendedProps);
+                onOpenModal();
+              }}
               eventContent={(arg) => {
                 const { event, view } = arg;
                 const { title, extendedProps } = event._def;
@@ -138,7 +186,19 @@ function CalendarPage(props) {
                 if (view.type === "listWeek") {
                   italicEl.innerHTML = `<span class="fc-title font-weight-boldest">${title}</span><div class="fc-description">${extendedProps.description}</div>`;
                 } else {
-                  italicEl.innerHTML = `<span class="fc-title">${title} - ${extendedProps.description}</span>`;
+                  italicEl.innerHTML = `<div class="fc-title">
+                    <div>${extendedProps.Member.FullName} - ${
+                    extendedProps.Member.MobilePhone
+                  }</div>
+                    <div class="d-flex">
+                      <div class="w-55px">${moment(
+                        extendedProps.BookDate
+                      ).format("HH:mm")} - </div>
+                      <div class="w-100 text-truncate">${
+                        extendedProps.RootTitles
+                      }</div>
+                    </div>
+                  </div>`;
                 }
 
                 let arrayOfDomNodes = [italicEl];
@@ -158,6 +218,7 @@ function CalendarPage(props) {
         onHide={onHideModal}
         onSubmit={onSubmitBooking}
         btnLoading={btnLoading}
+        initialValue={initialValue}
       />
     </div>
   );

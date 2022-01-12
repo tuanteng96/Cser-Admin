@@ -46,7 +46,7 @@ const initialDefault = {
   UserServiceIDs: "",
 };
 
-function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
+function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const { AuthStocks, AuthCrStockID } = useSelector(({ Auth }) => ({
     AuthStocks: Auth.Stocks.filter(
@@ -57,13 +57,36 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
 
   useEffect(() => {
     if (show) {
-      setInitialValues((prevState) => ({
-        ...prevState,
-        StockID: AuthCrStockID,
-      }));
+      if (initialValue.ID) {
+        setInitialValues((prevState) => ({
+          ...prevState,
+          MemberID: {
+            label: initialValue.Member.FullName,
+            value: initialValue.Member.ID,
+          },
+          RootIdS: initialValue.Roots.map((item) => ({
+            ...item,
+            value: item.ID,
+            label: item.Title,
+          })),
+          BookDate: initialValue.BookDate,
+          StockID: initialValue.StockID,
+          Desc: initialValue.Desc,
+          UserServiceIDs: initialValue.UserServices.map((item) => ({
+            ...item,
+            value: item.ID,
+            label: item.FullName,
+          })),
+        }));
+      } else {
+        setInitialValues((prevState) => ({
+          ...prevState,
+          StockID: AuthCrStockID,
+        }));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [show]);
+  }, [show, initialValue]);
 
   const loadOptionsCustomer = (inputValue, callback) => {
     setTimeout(async () => {
@@ -74,7 +97,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
         Thumbnail: toUrlServer("/images/user.png"),
       }));
       callback(dataResult);
-    }, 800);
+    }, 300);
   };
 
   const loadOptionsStaff = (inputValue, callback, stockID) => {
@@ -90,7 +113,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
         Thumbnail: toUrlServer("/images/user.png"),
       }));
       callback(dataResult);
-    }, 800);
+    }, 300);
   };
 
   const loadOptionsServices = (inputValue, callback, stockID, MemberID) => {
@@ -106,7 +129,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
         label: item.Title,
       }));
       callback(dataResult);
-    }, 800);
+    }, 300);
   };
 
   const CalendarSchema = Yup.object().shape({
@@ -146,7 +169,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
                 <Modal.Title>Đặt lịch dịch vụ</Modal.Title>
               </Modal.Header>
               <Modal.Body className="p-0">
-                <div className="form-group form-group-ezs px-6 pt-3 border-top">
+                <div className="form-group form-group-ezs px-6 pt-3">
                   <label className="mb-1">Khách hàng</label>
                   <AsyncSelect
                     className={`select-control ${
@@ -183,7 +206,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
                   <label className="mb-1">Thời gian thực hiện</label>
                   <DatePicker
                     name="BookDate"
-                    selected={values.BookDate}
+                    selected={values.BookDate ? new Date(values.BookDate) : ""}
                     onChange={(date) => setFieldValue("BookDate", date)}
                     onBlur={handleBlur}
                     className={`form-control ${
@@ -191,8 +214,11 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
                         ? "is-invalid solid-invalid"
                         : ""
                     }`}
-                    dateFormat="dd/MM/yyyy"
+                    shouldCloseOnSelect={false}
+                    dateFormat="dd/MM/yyyy h:mm aa"
                     placeholderText="Chọn thời gian"
+                    timeInputLabel="Thời gian"
+                    showTimeSelect
                   />
                   <Select
                     className={`select-control mt-2 ${
@@ -219,7 +245,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
                     onBlur={handleBlur}
                   />
                 </div>
-                <div className="form-group form-group-ezs px-6 pt-3">
+                <div className="form-group form-group-ezs border-top px-6 pt-3">
                   <label className="mb-1">Dịch vụ</label>
                   <AsyncSelect
                     key={`${
@@ -337,7 +363,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading }) {
                       btnLoading.isBtnBooking
                         ? "spinner spinner-white spinner-right"
                         : ""
-                    } w-auto my-0 mr-0`}
+                    } w-auto my-0 mr-0 h-auto`}
                     disabled={btnLoading.isBtnBooking}
                   >
                     Đặt lịch mới
