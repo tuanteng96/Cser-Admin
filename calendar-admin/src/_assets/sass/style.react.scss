@@ -14,8 +14,10 @@
 "./components/buttons",
 "./components/modal",
 "./components/dropdown",
-"./components/spinner";
+"./components/spinner",
+"./components/label";
 // 4: Plugin
-@import "./vendors/plugins/fullcalendar";
-@import "./vendors/plugins/react-select";
-@import "./vendors/plugins/datepicker";
+@import "./vendors/plugins/fullcalendar",
+"./vendors/plugins/react-select",
+"./vendors/plugins/datepicker",
+"./vendors/plugins/toastify";

@@ -17,6 +17,10 @@ const postBooking = (data, { CurrentStockID, u_id_z4aDf2 }) => {
     return axiosClient.post(`${POST_BOOKING_URL}&CurrentStockID=${CurrentStockID}&u_id_z4aDf2=${u_id_z4aDf2}`, JSON.stringify(data));
 };
 
+const deleteBooking = (data, { CurrentStockID, u_id_z4aDf2 }) => {
+    return axiosClient.post(`${POST_BOOKING_URL}&CurrentStockID=${CurrentStockID}&u_id_z4aDf2=${u_id_z4aDf2}`, JSON.stringify(data));
+};
+
 const getBooking = ({ MemberID, From, To, StockID, Status, UserServiceIDs }) => {
     return axiosClient.get(`/api/v3/mbookadmin?cmd=getbooks&memberid=${MemberID}&from=${From}&to=${To}&stockid=${StockID}&status=${Status}&UserServiceIDs=${UserServiceIDs}`);
 }
@@ -26,6 +30,7 @@ const CalendarCrud = {
     getStaffs,
     getRootServices,
     postBooking,
+    deleteBooking,
     getBooking
 };
 export default CalendarCrud;

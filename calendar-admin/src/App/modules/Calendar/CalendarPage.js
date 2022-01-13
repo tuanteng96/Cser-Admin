@@ -8,6 +8,7 @@ import ModalCalendar from "../../../components/ModalCalendar/ModalCalendar";
 import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar";
 import Cookies from "js-cookie";
 import moment from "moment";
+import { toast } from "react-toastify";
 import "../../../_assets/sass/pages/_calendar.scss";
 import CalendarCrud from "./_redux/CalendarCrud";
 
@@ -51,17 +52,24 @@ const getStatusClss = (Status) => {
   if (Status === "CHUA_XAC_NHAN") {
     return "warning";
   }
-  return "danger";
+  if (Status === "KHACH_KHONG_DEN") {
+    return "danger";
+  }
+  if (Status === "KHACH_DEN") {
+    return "success";
+  }
 };
 
 function CalendarPage(props) {
   const [isModal, setIsModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState({
     isBtnBooking: false,
+    isBtnDelete: false,
   });
   const [filters, setFilters] = useState(null);
   const [initialValue, setInitialValue] = useState({});
   const [Events, setEvents] = useState([]);
+  const [initialView, setInitialView] = useState("dayGridMonth");
 
   useEffect(() => {
     if (filters) {
@@ -81,8 +89,19 @@ function CalendarPage(props) {
     setIsModal(false);
   };
 
+  //Get Text Toast
+  const getTextToast = (Status) => {
+    if (!Status) {
+      return "Thêm mới lịch thành công !";
+    }
+    return "Cập nhập lịch thành công !";
+  };
+
   const onSubmitBooking = async (values) => {
-    setBtnLoading((prevState) => ({ ...prevState, isBtnBooking: true }));
+    setBtnLoading((prevState) => ({
+      ...prevState,
+      isBtnBooking: true,
+    }));
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
     const dataPost = {
@@ -104,11 +123,60 @@ function CalendarPage(props) {
         u_id_z4aDf2,
       });
       getBooking(() => {
-        setBtnLoading((prevState) => ({ ...prevState, isBtnBooking: false }));
+        toast.success(getTextToast(values.Status), {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1500,
+        });
+        setBtnLoading((prevState) => ({
+          ...prevState,
+          isBtnBooking: false,
+        }));
         onHideModal();
       });
     } catch (error) {
-      setBtnLoading((prevState) => ({ ...prevState, isBtnBooking: true }));
+      setBtnLoading((prevState) => ({
+        ...prevState,
+        isBtnBooking: false,
+      }));
+    }
+  };
+
+  const onDeleteBooking = async (ID) => {
+    setBtnLoading((prevState) => ({
+      ...prevState,
+      isBtnDelete: true,
+    }));
+    const CurrentStockID = Cookies.get("StockID");
+    const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
+    const deletePost = {
+      deletes: [
+        {
+          ID: ID,
+        },
+      ],
+    };
+
+    try {
+      await CalendarCrud.deleteBooking(deletePost, {
+        CurrentStockID,
+        u_id_z4aDf2,
+      });
+      getBooking(() => {
+        toast.success("Hủy lịch thành công !", {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1500,
+        });
+        setBtnLoading((prevState) => ({
+          ...prevState,
+          isBtnDelete: false,
+        }));
+        onHideModal();
+      });
+    } catch (error) {
+      setBtnLoading((prevState) => ({
+        ...prevState,
+        isBtnDelete: false,
+      }));
     }
   };
 
@@ -155,10 +223,15 @@ function CalendarPage(props) {
               themeSystem="unthemed"
               locale={viLocales}
               initialDate={TODAY}
-              initialView="dayGridMonth"
+              initialView={initialView}
               aspectRatio="3"
               editable={false}
               navLinks={true}
+              views={{
+                dayGridMonth: {
+                  dayMaxEvents: 2,
+                },
+              }}
               plugins={[
                 dayGridPlugin,
                 interactionPlugin,
@@ -173,6 +246,9 @@ function CalendarPage(props) {
               }}
               selectable={true}
               selectMirror={true}
+              moreLinkContent={({ num }) => {
+                return <>Xem thêm + {num}</>;
+              }}
               eventClick={({ event, el }) => {
                 const { _def } = event;
                 setInitialValue(_def.extendedProps);
@@ -206,8 +282,14 @@ function CalendarPage(props) {
                   domNodes: arrayOfDomNodes,
                 };
               }}
-              eventDidMount={(info) => {
-                return "ABC";
+              dayCellDidMount={(info) => {
+                //info.el.innerHTML = "Test";
+                //const elmParent = info.el;
+              }}
+              eventDidMount={(arg) => {
+                const { view } = arg;
+                //Set View Calendar
+                setInitialView(view.type);
               }}
             />
           </div>
@@ -217,6 +299,7 @@ function CalendarPage(props) {
         show={isModal}
         onHide={onHideModal}
         onSubmit={onSubmitBooking}
+        onDelete={onDeleteBooking}
         btnLoading={btnLoading}
         initialValue={initialValue}
       />

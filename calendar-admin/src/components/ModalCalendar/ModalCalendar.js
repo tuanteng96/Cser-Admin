@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import AsyncSelect from "react-select/async";
@@ -46,7 +46,14 @@ const initialDefault = {
   UserServiceIDs: "",
 };
 
-function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
+function ModalCalendar({
+  show,
+  onHide,
+  onSubmit,
+  btnLoading,
+  initialValue,
+  onDelete,
+}) {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const { AuthStocks, AuthCrStockID } = useSelector(({ Auth }) => ({
     AuthStocks: Auth.Stocks.filter(
@@ -60,6 +67,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
       if (initialValue.ID) {
         setInitialValues((prevState) => ({
           ...prevState,
+          ID: initialValue.ID,
           MemberID: {
             label: initialValue.Member.FullName,
             value: initialValue.Member.ID,
@@ -69,6 +77,7 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
             value: item.ID,
             label: item.Title,
           })),
+          Status: initialValue.Status,
           BookDate: initialValue.BookDate,
           StockID: initialValue.StockID,
           Desc: initialValue.Desc,
@@ -84,6 +93,8 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
           StockID: AuthCrStockID,
         }));
       }
+    } else {
+      setInitialValues(initialDefault);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, initialValue]);
@@ -132,6 +143,114 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
     }, 300);
   };
 
+  const getTitleModal = (Status, formikProps) => {
+    const { setFieldValue } = formikProps;
+    if (!Status) {
+      return "Đặt lịch dịch vụ";
+    }
+    if (Status === "CHUA_XAC_NHAN") {
+      return <span className="text-warning">Chưa xác nhận</span>;
+    }
+    return (
+      <Dropdown>
+        <Dropdown.Toggle
+          className={`bg-transparent p-0 border-0 modal-dropdown-title ${
+            Status === "XAC_NHAN" ? "text-primary" : ""
+          } ${Status === "KHACH_KHONG_DEN" ? "text-danger" : ""} ${
+            Status === "KHACH_DEN" ? "text-success" : ""
+          }`}
+          id="dropdown-custom-1"
+        >
+          <span>
+            {Status === "XAC_NHAN" ? "Đã xác nhận" : ""}
+            {Status === "KHACH_KHONG_DEN" ? "Khách hàng không đến" : ""}
+            {Status === "KHACH_DEN" ? "Hoàn thành" : ""}
+          </span>
+        </Dropdown.Toggle>
+        <Dropdown.Menu className="super-colors">
+          <Dropdown.Item
+            className="font-weight-bold"
+            eventKey="1"
+            active={Status === "XAC_NHAN"}
+            onClick={() => setFieldValue("Status", "XAC_NHAN", false)}
+          >
+            Đã xác nhận
+          </Dropdown.Item>
+          <Dropdown.Item
+            className="font-weight-bold"
+            eventKey="2"
+            active={Status === "KHACH_KHONG_DEN"}
+            onClick={() => setFieldValue("Status", "KHACH_KHONG_DEN", false)}
+          >
+            Đặt nhưng không đến
+          </Dropdown.Item>
+          <Dropdown.Item
+            className="font-weight-bold"
+            eventKey="3"
+            active={Status === "KHACH_DEN"}
+            onClick={() => setFieldValue("Status", "KHACH_DEN", false)}
+          >
+            Hoàn thành
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  };
+
+  const renderFooterModal = (Status, formikProps) => {
+    const { submitForm, setFieldValue } = formikProps;
+    if (!Status) {
+      return (
+        <Fragment>
+          <button
+            type="submit"
+            className={`btn btn-sm btn-primary ml-2 ${
+              btnLoading.isBtnBooking
+                ? "spinner spinner-white spinner-right"
+                : ""
+            } w-auto my-0 mr-0 h-auto`}
+            disabled={btnLoading.isBtnBooking}
+          >
+            Đặt lịch mới
+          </button>
+        </Fragment>
+      );
+    }
+    if (Status === "CHUA_XAC_NHAN") {
+      return (
+        <Fragment>
+          <button
+            type="submit"
+            className={`btn btn-sm btn-primary ml-2 ${
+              btnLoading.isBtnBooking
+                ? "spinner spinner-white spinner-right"
+                : ""
+            } w-auto my-0 mr-0 h-auto`}
+            disabled={btnLoading.isBtnBooking}
+            onClick={() => {
+              setFieldValue("Status", "XAC_NHAN", submitForm()); //submitForm()
+            }}
+          >
+            Xác nhận
+          </button>
+        </Fragment>
+      );
+    }
+    return (
+      <Fragment>
+        <button
+          type="submit"
+          className={`btn btn-sm btn-primary ml-2 ${
+            btnLoading.isBtnBooking ? "spinner spinner-white spinner-right" : ""
+          } w-auto my-0 mr-0 h-auto`}
+          disabled={btnLoading.isBtnBooking}
+        >
+          Lưu
+        </button>
+      </Fragment>
+    );
+  };
+
   const CalendarSchema = Yup.object().shape({
     BookDate: Yup.string().required("Vui lòng chọn ngày đặt lịch."),
     MemberID: Yup.object()
@@ -147,7 +266,13 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
   });
 
   return (
-    <Modal size="md" dialogClassName="modal-max-sm" show={show} onHide={onHide}>
+    <Modal
+      size="md"
+      dialogClassName="modal-max-sm"
+      show={show}
+      onHide={onHide}
+      scrollable={true}
+    >
       <Formik
         initialValues={initialValues}
         validationSchema={CalendarSchema}
@@ -164,9 +289,11 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
             setFieldValue,
           } = formikProps;
           return (
-            <Form>
+            <Form className="h-100 d-flex flex-column">
               <Modal.Header className="open-close" closeButton>
-                <Modal.Title>Đặt lịch dịch vụ</Modal.Title>
+                <Modal.Title>
+                  {getTitleModal(values.Status, formikProps)}
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body className="p-0">
                 <div className="form-group form-group-ezs px-6 pt-3">
@@ -203,7 +330,12 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
                   />
                 </div>
                 <div className="form-group form-group-ezs px-6 pt-3 border-top">
-                  <label className="mb-1">Thời gian thực hiện</label>
+                  <label className="mb-1 d-flex justify-content-between">
+                    Thời gian thực hiện
+                    <span className="btn btn-label btn-light-primary label-inline cursor-pointer">
+                      Lặp lại
+                    </span>
+                  </label>
                   <DatePicker
                     name="BookDate"
                     selected={values.BookDate ? new Date(values.BookDate) : ""}
@@ -336,38 +468,23 @@ function ModalCalendar({ show, onHide, onSubmit, btnLoading, initialValue }) {
                 </div>
               </Modal.Body>
               <Modal.Footer className="justify-content-between">
-                <Dropdown>
-                  <Dropdown.Toggle className="btn-sm" id="dropdown-custom-1">
-                    Đã xác nhận
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className="super-colors">
-                    <Dropdown.Item eventKey="1" active>
-                      Đã xác nhận
-                    </Dropdown.Item>
-                    <Dropdown.Item eventKey="2">Chưa xác nhận</Dropdown.Item>
-                    <Dropdown.Item eventKey="3">
-                      Đặt nhưng không đến
-                    </Dropdown.Item>
-                    <Dropdown.Item eventKey="4">Đang thực hiện</Dropdown.Item>
-                    {/* <Dropdown.Divider /> */}
-                    <Dropdown.Item eventKey="4">Đã hoàn thành</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                <div></div>
                 <div>
-                  <button className="btn btn-sm btn-secondary" onClick={onHide}>
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    className={`btn btn-sm btn-primary ml-2 ${
-                      btnLoading.isBtnBooking
-                        ? "spinner spinner-white spinner-right"
-                        : ""
-                    } w-auto my-0 mr-0 h-auto`}
-                    disabled={btnLoading.isBtnBooking}
-                  >
-                    Đặt lịch mới
-                  </button>
+                  {values.ID && (
+                    <button
+                      type="button"
+                      className={`btn btn-sm btn-danger ml-2 ${
+                        btnLoading.isBtnDelete
+                          ? "spinner spinner-white spinner-right"
+                          : ""
+                      } w-auto my-0 mr-0 h-auto`}
+                      disabled={btnLoading.isBtnDelete}
+                      onClick={() => onDelete(values.ID)}
+                    >
+                      Hủy lịch
+                    </button>
+                  )}
+                  {renderFooterModal(initialValues.Status, formikProps)}
                 </div>
               </Modal.Footer>
             </Form>

@@ -159,6 +159,18 @@
     }
 }
 
+.modal-dropdown-title {
+    font-weight: 500;
+    font-size: 1.3rem;
+    text-transform: unset;
+    span {
+        color: currentColor;
+    }
+    &::after {
+        color: currentColor !important;
+    }
+}
+
 // Open state
 .modal-open {
     overflow: auto !important;
