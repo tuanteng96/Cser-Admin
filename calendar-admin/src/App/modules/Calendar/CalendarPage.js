@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from 'react-redux';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -71,6 +72,10 @@ function CalendarPage(props) {
   const [Events, setEvents] = useState([]);
   const [initialView, setInitialView] = useState("dayGridMonth");
 
+  const { AuthCrStockID } = useSelector(({ Auth }) => ({
+    AuthCrStockID: Auth.CrStockID,
+  }));
+
   useEffect(() => {
     if (filters) {
       getBooking();
@@ -104,18 +109,22 @@ function CalendarPage(props) {
     }));
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
+    const objBooking = {
+      ...values,
+      MemberID: values.MemberID.value,
+      RootIdS: values.RootIdS.map((item) => item.value).toString(),
+      UserServiceIDs:
+        values.UserServiceIDs && values.UserServiceIDs.length > 0
+          ? values.UserServiceIDs.map((item) => item.value).toString()
+          : "",
+      BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+    }
+    if(Number(AuthCrStockID) !== Number(values.StockID)) {
+      objBooking.Status = "CHUA_XAC_NHAN";
+    }
     const dataPost = {
       booking: [
-        {
-          ...values,
-          MemberID: values.MemberID.value,
-          RootIdS: values.RootIdS.map((item) => item.value).toString(),
-          UserServiceIDs:
-            values.UserServiceIDs && values.UserServiceIDs.length > 0
-              ? values.UserServiceIDs.map((item) => item.value).toString()
-              : "",
-          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-        },
+        objBooking
       ],
     };
     try {
@@ -260,6 +269,9 @@ function CalendarPage(props) {
                 },
                 timeGridDay: {
                   eventMaxStack: 8,
+                  nowIndicator: true,
+                  now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                  scrollTime: moment(new Date()).format("HH:mm"),
                 },
               }}
               plugins={[

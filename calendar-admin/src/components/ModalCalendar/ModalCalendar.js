@@ -255,7 +255,7 @@ function ModalCalendar({
           className={`btn btn-sm btn-success w-auto my-0 mr-0 h-auto mr-2`}
           onClick={() => {
             onHide();
-            window.location.href = `/admin/?mdl=store&act=sell#${
+            window.top.location.href = `/admin/?mdl=store&act=sell#${
               values?.MemberID?.label === "Khách vãng lai"
                 ? "goto:member"
                 : `mp:${values?.MemberID?.value}`
