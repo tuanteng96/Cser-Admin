@@ -35,6 +35,11 @@ const StatusArr = [
     label: "Đặt nhưng không đến",
     color: "#F64E60",
   },
+  {
+    value: "KHACH_DEN",
+    label: "Hoàn thành",
+    color: "#1bc5bd",
+  },
   // {
   //   value: "",
   //   label: "Đang thực hiện",
@@ -47,29 +52,29 @@ const StatusArr = [
   // },
 ];
 
-const StatusServiceArr = [
-  {
-    value: "",
-    label: "Đang thực hiện",
-    color: "#1BC5BD",
-  },
-  {
-    value: "",
-    label: "Đã hoàn thành",
-    color: "#B5B5C3",
-  },
-];
+// const StatusServiceArr = [
+//   {
+//     value: "",
+//     label: "Đang thực hiện",
+//     color: "#1BC5BD",
+//   },
+//   {
+//     value: "",
+//     label: "Đã hoàn thành",
+//     color: "#B5B5C3",
+//   },
+// ];
 
-const AdvancedArr = [
-  {
-    value: "",
-    label: "Hiện thị các buổi đặt lịch",
-  },
-  {
-    value: "",
-    label: "Hiện thị các buổi làm dịch vụ",
-  },
-];
+// const AdvancedArr = [
+//   {
+//     value: "",
+//     label: "Hiện thị các buổi đặt lịch",
+//   },
+//   {
+//     value: "",
+//     label: "Hiện thị các buổi làm dịch vụ",
+//   },
+// ];
 
 const CustomOptionStaff = ({ children, ...props }) => {
   const { Thumbnail, label } = props.data;
@@ -119,15 +124,14 @@ const initialDefault = {
   UserServiceIDs: null,
 };
 
-function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
+function SidebarCalendar({ onOpenModal, onSubmit, filters, initialView }) {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const { CrStockID } = useSelector((state) => state.Auth);
 
   useEffect(() => {
     if (filters) {
       setInitialValues(filters);
-    }
-    else {
+    } else {
       setInitialValues((prevState) => ({ ...prevState, StockID: CrStockID }));
     }
   }, [CrStockID, filters]);
@@ -177,15 +181,20 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
           const { values, handleBlur, setFieldValue } = formikProps;
           return (
             <Form>
-              <div className="datepicker-inline">
+              <div className="datepicker-inline mb-2">
                 <DatePicker
                   selected={values.From && new Date(values.From)}
                   onChange={(date) => {
-                    setFieldValue("From", date[0], false);
-                    setFieldValue("To", date[1], false);
+                    if (initialView === "timeGridDay") {
+                      setFieldValue("From", date, false);
+                    }
+                    else {
+                      setFieldValue("From", date[0], false);
+                      setFieldValue("To", date[1], false);
+                    }
                   }}
                   inline
-                  selectsRange
+                  selectsRange={initialView !== "timeGridDay"}
                   startDate={values.From && new Date(values.From)}
                   endDate={values.To && new Date(values.To)}
                 />
@@ -193,6 +202,7 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
               <div className="form-group form-group-ezs">
                 <label className="mb-1">Khách hàng</label>
                 <AsyncSelect
+                  menuPlacement="top"
                   isMulti
                   className="select-control"
                   classNamePrefix="select"
@@ -222,6 +232,7 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
               <div className="form-group form-group-ezs">
                 <label className="mb-1">Nhân viên</label>
                 <AsyncSelect
+                  menuPlacement="top"
                   key={CrStockID}
                   isMulti
                   className="select-control"
@@ -232,7 +243,9 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
                   //menuIsOpen={true}
                   name="UserServiceIDs"
                   value={values.UserServiceIDs}
-                  onChange={(option) => setFieldValue("UserServiceIDs", option, false)}
+                  onChange={(option) =>
+                    setFieldValue("UserServiceIDs", option, false)
+                  }
                   placeholder="Chọn nhân viên"
                   components={{
                     Option: CustomOptionStaff,
@@ -250,6 +263,7 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
               <div className="form-group form-group-ezs">
                 <label className="mb-1">Trạng thái đặt lịch</label>
                 <Select
+                  menuPlacement="top"
                   className="select-control"
                   classNamePrefix="select"
                   isLoading={false}
@@ -267,7 +281,7 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
                   options={StatusArr}
                 />
               </div>
-              <div className="form-group form-group-ezs">
+              {/* <div className="form-group form-group-ezs">
                 <label className="mb-1">Trạng thái buổi dịch vụ</label>
                 <Select
                   className="select-control"
@@ -295,7 +309,7 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters }) {
                   placeholder="Chọn"
                   options={AdvancedArr}
                 />
-              </div>
+              </div> */}
               <ValueChangeListener />
             </Form>
           );

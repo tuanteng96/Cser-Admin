@@ -110,9 +110,10 @@ function CalendarPage(props) {
           ...values,
           MemberID: values.MemberID.value,
           RootIdS: values.RootIdS.map((item) => item.value).toString(),
-          UserServiceIDs: values.UserServiceIDs.map(
-            (item) => item.value
-          ).toString(),
+          UserServiceIDs:
+            values.UserServiceIDs && values.UserServiceIDs.length > 0
+              ? values.UserServiceIDs.map((item) => item.value).toString()
+              : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
         },
       ],
@@ -187,6 +188,10 @@ function CalendarPage(props) {
   const getBooking = (fn) => {
     const newFilters = {
       ...filters,
+      MemberID:
+        filters.MemberID && Array.isArray(filters.MemberID)
+          ? filters.MemberID.map((item) => item.value).toString()
+          : "",
       From: filters.From ? moment(filters.From).format("YYYY-MM-DD") : "",
       To: filters.To ? moment(filters.To).format("YYYY-MM-DD") : "",
       Status: filters.Status ? filters.Status.value : "",
@@ -197,12 +202,15 @@ function CalendarPage(props) {
     };
     CalendarCrud.getBooking(newFilters)
       .then(({ data }) => {
-        const dataBooks = data.books.map((item) => ({
-          ...item,
-          start: item.BookDate,
-          title: item.RootTitles,
-          className: `fc-event-solid-${getStatusClss(item.Status)}`,
-        }));
+        const dataBooks =
+          data.books && Array.isArray(data.books)
+            ? data.books.map((item) => ({
+                ...item,
+                start: item.BookDate,
+                title: item.RootTitles,
+                className: `fc-event-solid-${getStatusClss(item.Status)}`,
+              }))
+            : [];
         setEvents(dataBooks);
         fn && fn();
       })
@@ -211,25 +219,40 @@ function CalendarPage(props) {
 
   return (
     <div className="ezs-calendar">
-      <div className="container-fluid h-100">
+      <div className="container-fluid h-100 py-3">
         <div className="d-flex h-100">
           <SidebarCalendar
             filters={filters}
             onOpenModal={onOpenModal}
             onSubmit={getFiltersBooking}
+            initialView={initialView}
           />
           <div className="ezs-calendar__content">
             <FullCalendar
               themeSystem="unthemed"
               locale={viLocales}
-              initialDate={TODAY}
+              initialDate={
+                filters && filters.From
+                  ? moment(filters.From).format("YYYY-MM-DD")
+                  : TODAY
+              }
               initialView={initialView}
+              // validRange={{
+              //   start: TODAY,
+              // }}
               aspectRatio="3"
               editable={false}
               navLinks={true}
+              allDaySlot={false}
               views={{
                 dayGridMonth: {
                   dayMaxEvents: 2,
+                },
+                timeGridWeek: {
+                  eventMaxStack: 2,
+                },
+                timeGridDay: {
+                  eventMaxStack: 8,
                 },
               }}
               plugins={[
@@ -246,7 +269,13 @@ function CalendarPage(props) {
               }}
               selectable={true}
               selectMirror={true}
-              moreLinkContent={({ num }) => {
+              moreLinkContent={({ num, view }) => {
+                if (
+                  view.type === "timeGridWeek" ||
+                  view.type === "timeGridDay"
+                ) {
+                  return <>+ {num}</>;
+                }
                 return <>Xem thêm + {num}</>;
               }}
               eventClick={({ event, el }) => {
@@ -259,24 +288,50 @@ function CalendarPage(props) {
                 const { title, extendedProps } = event._def;
                 let italicEl = document.createElement("div");
                 italicEl.classList.add("fc-content");
-                if (view.type === "listWeek") {
-                  italicEl.innerHTML = `<span class="fc-title font-weight-boldest">${title}</span><div class="fc-description">${extendedProps.description}</div>`;
-                } else {
+
+                if (
+                  typeof extendedProps !== "object" ||
+                  Object.keys(extendedProps).length > 0
+                ) {
                   italicEl.innerHTML = `<div class="fc-title">
-                    <div>${extendedProps.Member.FullName} - ${
-                    extendedProps.Member.MobilePhone
+                    <div>${
+                      extendedProps.AtHome
+                        ? `<i class="fas fa-home text-white font-size-xs"></i>`
+                        : ""
+                    } ${extendedProps.Member.FullName} - ${
+                    extendedProps.Member?.MobilePhone
                   }</div>
                     <div class="d-flex">
-                      <div class="w-55px">${moment(
+                      <div class="w-45px">${moment(
                         extendedProps.BookDate
                       ).format("HH:mm")} - </div>
-                      <div class="w-100 text-truncate">${
+                      <div class="flex-1 text-truncate">${
                         extendedProps.RootTitles
                       }</div>
                     </div>
                   </div>`;
+                } else {
+                  italicEl.innerHTML = `<div class="fc-title">
+                    Không có lịch
+                  </div>`;
                 }
-
+                // if (view.type === "listWeek") {
+                //   italicEl.innerHTML = `<span class="fc-title font-weight-boldest">${title}</span><div class="fc-description">${extendedProps.description}</div>`;
+                // } else {
+                //   italicEl.innerHTML = `<div class="fc-title">
+                //     <div>${extendedProps.Member.FullName} - ${
+                //     extendedProps.Member.MobilePhone
+                //   }</div>
+                //     <div class="d-flex">
+                //       <div class="w-55px">${moment(
+                //         extendedProps.BookDate
+                //       ).format("HH:mm")} - </div>
+                //       <div class="w-100 text-truncate">${
+                //         extendedProps.RootTitles
+                //       }</div>
+                //     </div>
+                //   </div>`;
+                // }
                 let arrayOfDomNodes = [italicEl];
                 return {
                   domNodes: arrayOfDomNodes,

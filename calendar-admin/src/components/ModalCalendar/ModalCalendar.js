@@ -44,6 +44,7 @@ const initialDefault = {
   Desc: "",
   StockID: 0,
   UserServiceIDs: "",
+  AtHome: false,
 };
 
 function ModalCalendar({
@@ -86,11 +87,13 @@ function ModalCalendar({
             value: item.ID,
             label: item.FullName,
           })),
+          AtHome: initialValue.AtHome,
         }));
       } else {
         setInitialValues((prevState) => ({
           ...prevState,
           StockID: AuthCrStockID,
+          BookDate: new Date(),
         }));
       }
     } else {
@@ -129,7 +132,7 @@ function ModalCalendar({
 
   const loadOptionsServices = (inputValue, callback, stockID, MemberID) => {
     const filters = {
-      key: inputValue,
+      Key: inputValue,
       StockID: stockID,
       MemberID: MemberID?.value,
     };
@@ -198,13 +201,13 @@ function ModalCalendar({
   };
 
   const renderFooterModal = (Status, formikProps) => {
-    const { submitForm, setFieldValue } = formikProps;
+    const { submitForm, setFieldValue, values } = formikProps;
     if (!Status) {
       return (
         <Fragment>
           <button
             type="submit"
-            className={`btn btn-sm btn-primary ml-2 ${
+            className={`btn btn-sm btn-primary mr-2 ${
               btnLoading.isBtnBooking
                 ? "spinner spinner-white spinner-right"
                 : ""
@@ -221,7 +224,7 @@ function ModalCalendar({
         <Fragment>
           <button
             type="submit"
-            className={`btn btn-sm btn-primary ml-2 ${
+            className={`btn btn-sm btn-primary mr-2 ${
               btnLoading.isBtnBooking
                 ? "spinner spinner-white spinner-right"
                 : ""
@@ -240,12 +243,26 @@ function ModalCalendar({
       <Fragment>
         <button
           type="submit"
-          className={`btn btn-sm btn-primary ml-2 ${
+          className={`btn btn-sm btn-primary mr-2 ${
             btnLoading.isBtnBooking ? "spinner spinner-white spinner-right" : ""
           } w-auto my-0 mr-0 h-auto`}
           disabled={btnLoading.isBtnBooking}
         >
-          Lưu
+          Lưu thay đổi
+        </button>
+        <button
+          type="button"
+          className={`btn btn-sm btn-success w-auto my-0 mr-0 h-auto mr-2`}
+          onClick={() => {
+            onHide();
+            window.location.href = `/admin/?mdl=store&act=sell#${
+              values?.MemberID?.label === "Khách vãng lai"
+                ? "goto:member"
+                : `mp:${values?.MemberID?.value}`
+            }`;
+          }}
+        >
+          Thực hiện
         </button>
       </Fragment>
     );
@@ -259,16 +276,16 @@ function ModalCalendar({
     RootIdS: Yup.array()
       .required("Vui lòng chọn dịch vụ.")
       .nullable(),
-    UserServiceIDs: Yup.array()
-      .required("Vui lòng chọn nhân viên.")
-      .nullable(),
+    // UserServiceIDs: Yup.array()
+    //   .required("Vui lòng chọn nhân viên.")
+    //   .nullable(),
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
   });
 
   return (
     <Modal
       size="md"
-      dialogClassName="modal-max-sm"
+      dialogClassName="modal-max-sm modal-content-right"
       show={show}
       onHide={onHide}
       scrollable={true}
@@ -291,7 +308,7 @@ function ModalCalendar({
           return (
             <Form className="h-100 d-flex flex-column">
               <Modal.Header className="open-close" closeButton>
-                <Modal.Title>
+                <Modal.Title className="text-uppercase">
                   {getTitleModal(values.Status, formikProps)}
                 </Modal.Title>
               </Modal.Header>
@@ -332,9 +349,9 @@ function ModalCalendar({
                 <div className="form-group form-group-ezs px-6 pt-3 border-top">
                   <label className="mb-1 d-flex justify-content-between">
                     Thời gian thực hiện
-                    <span className="btn btn-label btn-light-primary label-inline cursor-pointer">
+                    {/* <span className="btn btn-label btn-light-primary label-inline cursor-pointer">
                       Lặp lại
-                    </span>
+                    </span> */}
                   </label>
                   <DatePicker
                     name="BookDate"
@@ -418,6 +435,24 @@ function ModalCalendar({
                         : "Không tìm thấy dịch vụ"
                     }
                   />
+
+                  <div className="d-flex align-items-center justify-content-between mt-3">
+                    <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
+                    <span className="switch switch-sm switch-icon">
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="AtHome"
+                          onChange={(evt) =>
+                            setFieldValue("AtHome", evt.target.checked)
+                          }
+                          onBlur={handleBlur}
+                          checked={values.AtHome}
+                        />
+                        <span />
+                      </label>
+                    </span>
+                  </div>
                 </div>
                 <div className="form-group form-group-ezs px-6 pt-3 border-top">
                   <label className="mb-1">Nhân viên thực hiện</label>
@@ -468,12 +503,12 @@ function ModalCalendar({
                 </div>
               </Modal.Body>
               <Modal.Footer className="justify-content-between">
-                <div></div>
                 <div>
+                  {renderFooterModal(initialValues.Status, formikProps)}
                   {values.ID && (
                     <button
                       type="button"
-                      className={`btn btn-sm btn-danger ml-2 ${
+                      className={`btn btn-sm btn-danger mr-2 ${
                         btnLoading.isBtnDelete
                           ? "spinner spinner-white spinner-right"
                           : ""
@@ -484,8 +519,8 @@ function ModalCalendar({
                       Hủy lịch
                     </button>
                   )}
-                  {renderFooterModal(initialValues.Status, formikProps)}
                 </div>
+                <div></div>
               </Modal.Footer>
             </Form>
           );

@@ -177,6 +177,27 @@
     padding: 0 !important;
 }
 
+//
+.modal-content-right {
+    margin: 0;
+    max-height: calc(100vh - 40px);
+    height: 100%;
+    float: right;
+    width: 100%;
+    .modal-content {
+        max-height: 100vh;
+        border-radius: 0;
+    }
+}
+
+.modal.fade .modal-dialog.modal-content-right {
+    transform: translate(50px, 0);
+}
+
+.modal.fade.show .modal-dialog.modal-content-right {
+    transform: none;
+}
+
 // Responsive breakpoints
 @include media-breakpoint-up(xl) {
     .modal-dialog.modal-xl {

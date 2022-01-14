@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { AuthMock } from '../_mocks/mockAuth'
 
-const UserInfo = window.Info || AuthMock;
+const UserInfo = window.top.Info || AuthMock;
 
 const initialState = UserInfo;
 

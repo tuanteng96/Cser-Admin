@@ -10,8 +10,8 @@ const getMembers = (key) => {
 const getStaffs = ({ StockID, key }) => {
     return axiosClient.get(`${GET_MEMBERS_STAFF_URL}?cmd=user&roles=DV&crstockid=${StockID}&q=${key}`);
 };
-const getRootServices = ({ MemberID, StockID }) => {
-    return axiosClient.get(`${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=&stockid=${StockID}`);
+const getRootServices = ({ MemberID, StockID, Key }) => {
+    return axiosClient.get(`${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}=&stockid=${StockID}`);
 }
 const postBooking = (data, { CurrentStockID, u_id_z4aDf2 }) => {
     return axiosClient.post(`${POST_BOOKING_URL}&CurrentStockID=${CurrentStockID}&u_id_z4aDf2=${u_id_z4aDf2}`, JSON.stringify(data));

@@ -269,6 +269,26 @@
             font-weight: 500;
             text-decoration: underline;
         }
+        .fc-timegrid-event-harness {
+            height: 56px;
+            overflow: hidden;
+        }
+        .fc-timegrid-more-link {
+            display: flex;
+            align-items: center;
+            padding: 0 7px;
+            text-decoration: none;
+            font-weight: 500;
+            color: #3699ff;
+            background: #fff;
+            box-shadow: 0 10px 30px 0 rgb(82 63 105 / 8%);
+            font-size: 14px;
+            border: 1px solid #ebedf3;
+            height: 55px;
+        }
+        .fc-list-event-time {
+            color: #fff;
+        }
         // .fc-theme-standard .fc-scrollgrid {
         //     border: 1px solid #ecedf2;
         // }
@@ -292,6 +312,7 @@
         .fc-event-dot {
             background: #fff;
             border: 1px solid $gray-200;
+            cursor: pointer;
             &.fc-not-start.fc-not-end {
                 border-left: 1px solid $gray-100;
             }
@@ -366,6 +387,8 @@
             box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 10%) !important;
             border: 0 !important;
             border-radius: 5px !important;
+            max-width: 400px;
+            z-index: 999 !important;
             .fc-popover-header {
                 background: #fff;
                 border-bottom: 1px solid $gray-200;
