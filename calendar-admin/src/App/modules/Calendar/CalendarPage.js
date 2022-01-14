@@ -227,7 +227,14 @@ function CalendarPage(props) {
             onSubmit={getFiltersBooking}
             initialView={initialView}
           />
-          <div className="ezs-calendar__content">
+          <div
+            className="ezs-calendar__content"
+            key={
+              filters && filters.From
+                ? moment(filters.From).format("YYYY-MM-DD")
+                : TODAY
+            }
+          >
             <FullCalendar
               themeSystem="unthemed"
               locale={viLocales}
