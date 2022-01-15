@@ -289,6 +289,21 @@
         .fc-list-event-time {
             color: #fff;
         }
+        .fc-daygrid-event-harness-abs {
+            max-width: 100%;
+        }
+        .fc-timegrid {
+            .fc-col-header,
+            .fc-timegrid-body {
+                width: 100% !important;
+                .fc-timegrid-slots,
+                .fc-timegrid-cols {
+                    >table {
+                        width: 100% !important;
+                    }
+                }
+            }
+        }
         // .fc-theme-standard .fc-scrollgrid {
         //     border: 1px solid #ecedf2;
         // }
@@ -347,7 +362,8 @@
             @each $name,
             $color in $theme-colors {
                 &.fc-event-#{$name} {
-                    &.fc-event-start {
+                    &.fc-event-start,
+                    &.fc-event-end {
                         .fc-content {
                             &:before {
                                 background: $color;
@@ -358,7 +374,8 @@
                 &.fc-event-solid-#{$name} {
                     &.fc-event-start,
                     &.fc-not-start.fc-not-end,
-                    &.fc-not-start.fc-end {
+                    &.fc-not-start.fc-end,
+                    &.fc-event-end {
                         background: $color;
                         .fc-title {
                             color: theme-inverse-color($name);
@@ -537,6 +554,40 @@
                 }
                 &.fc-button-disabled {
                     opacity: 0.7;
+                }
+            }
+        }
+    }
+    @include media-breakpoint-down(md) {
+        .fc {
+            .fc-header-toolbar {
+                .fc-toolbar-chunk {
+                    //display: none
+                    &:last-child {
+                        .fc-button-group {
+                            button {
+                                &:nth-child(1),
+                                &:nth-child(2),
+                                &:nth-child(5) {
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @include media-breakpoint-down(sm) {
+        .fc {
+            .fc-header-toolbar {
+                flex-direction: column;
+                .fc-toolbar-chunk:first-child {
+                    order: 2;
+                    margin-top: 15px
+                }
+                .fc-toolbar-chunk:nth-child(2) {
+                    margin-bottom: 15px
                 }
             }
         }

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from 'react-redux';
+import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
+import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ModalCalendar from "../../../components/ModalCalendar/ModalCalendar";
 import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar";
@@ -12,6 +13,7 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import "../../../_assets/sass/pages/_calendar.scss";
 import CalendarCrud from "./_redux/CalendarCrud";
+import { useWindowSize } from "../../../hooks/useWindowSize";
 
 var todayDate = moment().startOf("day");
 // var YM = todayDate.format("YYYY-MM");
@@ -63,18 +65,38 @@ const getStatusClss = (Status) => {
 
 function CalendarPage(props) {
   const [isModal, setIsModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState({
     isBtnBooking: false,
     isBtnDelete: false,
   });
+  const [isFilter, setIsFilter] = useState(false);
   const [filters, setFilters] = useState(null);
   const [initialValue, setInitialValue] = useState({});
   const [Events, setEvents] = useState([]);
+  const [StaffFull, setStaffFull] = useState([]);
   const [initialView, setInitialView] = useState("dayGridMonth");
-
+  const { width } = useWindowSize();
   const { AuthCrStockID } = useSelector(({ Auth }) => ({
     AuthCrStockID: Auth.CrStockID,
   }));
+
+  const calendarRef = useRef();
+
+  //Get Staff Full
+  useEffect(() => {
+    async function getStaffFull() {
+      const { data } = await CalendarCrud.getStaffs({
+        StockID: AuthCrStockID,
+        All: true,
+      });
+      const newData = Array.isArray(data.data) && data.data.length > 0 ? data.data.map(item => ({ id: item.id, title: item.text })) : [];
+      setStaffFull(newData);
+    }
+
+    getStaffFull();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (filters) {
@@ -92,6 +114,15 @@ function CalendarPage(props) {
   const onHideModal = () => {
     setInitialValue({});
     setIsModal(false);
+  };
+
+  //
+  const onOpenFilter = () => {
+    setIsFilter(true);
+  };
+  //
+  const onHideFilter = () => {
+    setIsFilter(false);
   };
 
   //Get Text Toast
@@ -118,14 +149,12 @@ function CalendarPage(props) {
           ? values.UserServiceIDs.map((item) => item.value).toString()
           : "",
       BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-    }
-    if(Number(AuthCrStockID) !== Number(values.StockID)) {
+    };
+    if (Number(AuthCrStockID) !== Number(values.StockID)) {
       objBooking.Status = "CHUA_XAC_NHAN";
     }
     const dataPost = {
-      booking: [
-        objBooking
-      ],
+      booking: [objBooking],
     };
     try {
       await CalendarCrud.postBooking(dataPost, {
@@ -191,10 +220,16 @@ function CalendarPage(props) {
   };
 
   const getFiltersBooking = (values) => {
+    // console.log(values);
+    // console.log(moment().diff(date_time, "minutes"));
+    if (values.From) {
+      //calendarRef.current.getApi().gotoDate(moment(values.From).format("YYYY-MM-DD"));
+    }
     setFilters(values);
   };
 
   const getBooking = (fn) => {
+    !loading && setLoading(true);
     const newFilters = {
       ...filters,
       MemberID:
@@ -213,14 +248,18 @@ function CalendarPage(props) {
       .then(({ data }) => {
         const dataBooks =
           data.books && Array.isArray(data.books)
-            ? data.books.map((item) => ({
-                ...item,
-                start: item.BookDate,
-                title: item.RootTitles,
-                className: `fc-event-solid-${getStatusClss(item.Status)}`,
-              }))
+            ? data.books
+                .map((item) => ({
+                  ...item,
+                  start: item.BookDate,
+                  title: item.RootTitles,
+                  className: `fc-event-solid-${getStatusClss(item.Status)}`,
+                  resourceId: 4737,
+                }))
+                .filter((item) => item.Status !== "TU_CHOI")
             : [];
         setEvents(dataBooks);
+        setLoading(false);
         fn && fn();
       })
       .catch((error) => console.log(error));
@@ -229,33 +268,25 @@ function CalendarPage(props) {
   return (
     <div className="ezs-calendar">
       <div className="container-fluid h-100 py-3">
-        <div className="d-flex h-100">
+        <div className="d-flex flex-column flex-lg-row h-100">
           <SidebarCalendar
             filters={filters}
             onOpenModal={onOpenModal}
             onSubmit={getFiltersBooking}
             initialView={initialView}
+            loading={loading}
+            onOpenFilter={onOpenFilter}
+            onHideFilter={onHideFilter}
+            isFilter={isFilter}
           />
-          <div
-            className="ezs-calendar__content"
-            key={
-              filters && filters.From
-                ? moment(filters.From).format("YYYY-MM-DD")
-                : TODAY
-            }
-          >
+          <div className="ezs-calendar__content">
             <FullCalendar
+              ref={calendarRef}
               themeSystem="unthemed"
               locale={viLocales}
-              initialDate={
-                filters && filters.From
-                  ? moment(filters.From).format("YYYY-MM-DD")
-                  : TODAY
-              }
-              initialView={initialView}
-              // validRange={{
-              //   start: TODAY,
-              // }}
+              initialDate={TODAY}
+              initialView={width > 991 ? initialView : "timeGridDay"}
+              schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
               aspectRatio="3"
               editable={false}
               navLinks={true}
@@ -273,18 +304,30 @@ function CalendarPage(props) {
                   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                   scrollTime: moment(new Date()).format("HH:mm"),
                 },
+                resourceTimeGridDay: {
+                  type: "resourceTimeline",
+                  buttonText: "Nhân viên",
+                  resourceAreaHeaderContent: () => "Danh sách nhân viên",
+                  nowIndicator: true,
+                  now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                  scrollTime: moment(new Date()).format("HH:mm"),
+                  //duration: { days: 4 },
+                },
               }}
               plugins={[
                 dayGridPlugin,
                 interactionPlugin,
                 timeGridPlugin,
                 listPlugin,
+                resourceTimeGridPlugin,
               ]}
+              resources={StaffFull}
               events={Events}
               headerToolbar={{
                 left: "prev,next today",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+                right:
+                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay",
               }}
               selectable={true}
               selectMirror={true}
@@ -303,8 +346,8 @@ function CalendarPage(props) {
                 onOpenModal();
               }}
               eventContent={(arg) => {
-                const { event, view } = arg;
-                const { title, extendedProps } = event._def;
+                const { event } = arg;
+                const { extendedProps } = event._def;
                 let italicEl = document.createElement("div");
                 italicEl.classList.add("fc-content");
 
@@ -364,6 +407,37 @@ function CalendarPage(props) {
                 const { view } = arg;
                 //Set View Calendar
                 setInitialView(view.type);
+              }}
+              datesSet={({ view, start, end }) => {
+                const newFilters = {
+                  ...filters,
+                  StockID: AuthCrStockID,
+                };
+                if (view.type === "dayGridMonth") {
+                  const startOfMonth = moment()
+                    .startOf("month")
+                    .format("YYYY-MM-DD");
+                  const endOfMonth = moment()
+                    .endOf("month")
+                    .format("YYYY-MM-DD");
+                  newFilters.From = startOfMonth;
+                  newFilters.To = endOfMonth;
+                }
+                if (view.type === "timeGridWeek" || view.type === "listWeek") {
+                  newFilters.From = moment(start)
+                    .add(1, "days")
+                    .format("YYYY-MM-DD");
+                  newFilters.To = moment(end).format("YYYY-MM-DD");
+                }
+                if (
+                  view.type !== "dayGridMonth" &&
+                  view.type !== "timeGridWeek" &&
+                  view.type !== "listWeek"
+                ) {
+                  newFilters.From = moment(new Date()).format("YYYY-MM-DD");
+                  newFilters.To = "";
+                }
+                setFilters(newFilters);
               }}
             />
           </div>

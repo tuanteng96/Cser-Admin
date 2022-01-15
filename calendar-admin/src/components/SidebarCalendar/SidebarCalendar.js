@@ -7,16 +7,19 @@ import { Form, Formik, useFormikContext } from "formik";
 import CalendarCrud from "../../App/modules/Calendar/_redux/CalendarCrud";
 import { toUrlServer } from "../../helpers/AssetsHelpers";
 import { useSelector } from "react-redux";
+import { useWindowSize } from "../../hooks/useWindowSize";
 
 SidebarCalendar.propTypes = {
   onOpenModal: PropTypes.func,
   onSubmit: PropTypes.func,
   filters: PropTypes.object,
+  loading: PropTypes.bool,
 };
 SidebarCalendar.defaultProps = {
   onOpenModal: null,
   onSubmit: null,
   filters: null,
+  loading: false,
 };
 
 const StatusArr = [
@@ -124,17 +127,25 @@ const initialDefault = {
   UserServiceIDs: null,
 };
 
-function SidebarCalendar({ onOpenModal, onSubmit, filters, initialView }) {
+function SidebarCalendar({
+  onOpenModal,
+  onSubmit,
+  filters,
+  initialView,
+  loading,
+  onOpenFilter,
+  onHideFilter,
+  isFilter,
+}) {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const { CrStockID } = useSelector((state) => state.Auth);
+  const { width } = useWindowSize();
 
   useEffect(() => {
     if (filters) {
       setInitialValues(filters);
-    } else {
-      setInitialValues((prevState) => ({ ...prevState, StockID: CrStockID }));
     }
-  }, [CrStockID, filters]);
+  }, [filters]);
 
   const loadOptionsStaff = (inputValue, callback) => {
     const filters = {
@@ -166,12 +177,24 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters, initialView }) {
 
   return (
     <div className="ezs-calendar__sidebar">
-      <button
-        className="btn btn-primary btn-sm h-42px mb-24px"
-        onClick={onOpenModal}
-      >
-        Tạo đặt lịch mới
-      </button>
+      <div className="d-flex justify-content-between">
+        <button
+          className="btn btn-primary btn-sm h-42px mb-24px"
+          onClick={onOpenModal}
+        >
+          Tạo đặt lịch mới
+        </button>
+        <button
+          className="btn btn-info btn-sm h-42px mb-24px ml-2 d-lg-none"
+          onClick={onOpenFilter}
+        >
+          Bộ lọc
+        </button>
+      </div>
+      <div
+        className={`sidebar-bg ${isFilter ? "show" : ""}`}
+        onClick={onHideFilter}
+      ></div>
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
@@ -180,15 +203,14 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters, initialView }) {
         {(formikProps) => {
           const { values, handleBlur, setFieldValue } = formikProps;
           return (
-            <Form>
+            <Form className={isFilter ? "show" : ""}>
               <div className="datepicker-inline mb-2">
                 <DatePicker
                   selected={values.From && new Date(values.From)}
                   onChange={(date) => {
                     if (initialView === "timeGridDay") {
                       setFieldValue("From", date, false);
-                    }
-                    else {
+                    } else {
                       setFieldValue("From", date[0], false);
                       setFieldValue("To", date[1], false);
                     }
@@ -310,7 +332,27 @@ function SidebarCalendar({ onOpenModal, onSubmit, filters, initialView }) {
                   options={AdvancedArr}
                 />
               </div> */}
-              <ValueChangeListener />
+              {width > 991 ? (
+                <ValueChangeListener />
+              ) : (
+                <div className="d-flex justify-content-between">
+                  <button
+                    type="submit"
+                    className={`btn btn-primary btn-sm d-block ${
+                      loading ? "spinner spinner-white spinner-right" : ""
+                    } w-auto my-0 mr-0 h-auto`}
+                    disabled={loading}
+                  >
+                    Lọc ngay
+                  </button>
+                  <button
+                    type="submit"
+                    className={`btn btn-secondary w-auto my-0 mr-0 h-auto`}
+                  >
+                    Đóng
+                  </button>
+                </div>
+              )}
             </Form>
           );
         }}

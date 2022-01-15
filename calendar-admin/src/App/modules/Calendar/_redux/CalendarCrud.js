@@ -7,8 +7,8 @@ const POST_BOOKING_URL = "/api/v3/mbookadmin?cmd=AdminBooking";
 const getMembers = (key) => {
     return axiosClient.get(`${GET_MEMBERS_STAFF_URL}?cmd=member&q=${key}`);
 };
-const getStaffs = ({ StockID, key }) => {
-    return axiosClient.get(`${GET_MEMBERS_STAFF_URL}?cmd=user&roles=DV&crstockid=${StockID}&q=${key}`);
+const getStaffs = ({ StockID, key, All }) => {
+    return axiosClient.get(`${GET_MEMBERS_STAFF_URL}?cmd=user&roles=DV&crstockid=${StockID}&q=${key}${All ? "&all=1" : ""}`);
 };
 const getRootServices = ({ MemberID, StockID, Key }) => {
     return axiosClient.get(`${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}=&stockid=${StockID}`);
