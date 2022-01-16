@@ -204,7 +204,7 @@ function SidebarCalendar({
           const { values, handleBlur, setFieldValue } = formikProps;
           return (
             <Form className={isFilter ? "show" : ""}>
-              <div className="datepicker-inline mb-2">
+              <div className={`datepicker-inline ${initialView !== "timeGridDay" ? "disabled" : ""} mb-2`}>
                 <DatePicker
                   selected={values.From && new Date(values.From)}
                   onChange={(date) => {
@@ -219,10 +219,11 @@ function SidebarCalendar({
                   selectsRange={initialView !== "timeGridDay"}
                   startDate={values.From && new Date(values.From)}
                   endDate={values.To && new Date(values.To)}
+                  disabled={true}
                 />
               </div>
               <div className="form-group form-group-ezs">
-                <label className="mb-1">Khách hàng</label>
+                {/* <label className="mb-1">Khách hàng</label> */}
                 <AsyncSelect
                   menuPlacement="top"
                   isMulti
@@ -252,7 +253,7 @@ function SidebarCalendar({
                 />
               </div>
               <div className="form-group form-group-ezs">
-                <label className="mb-1">Nhân viên</label>
+                {/* <label className="mb-1">Nhân viên</label> */}
                 <AsyncSelect
                   menuPlacement="top"
                   key={CrStockID}
@@ -283,7 +284,7 @@ function SidebarCalendar({
                 />
               </div>
               <div className="form-group form-group-ezs">
-                <label className="mb-1">Trạng thái đặt lịch</label>
+                {/* <label className="mb-1">Trạng thái đặt lịch</label> */}
                 <Select
                   menuPlacement="top"
                   className="select-control"

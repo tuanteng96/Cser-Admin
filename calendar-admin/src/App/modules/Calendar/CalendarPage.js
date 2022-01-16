@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -9,11 +9,14 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ModalCalendar from "../../../components/ModalCalendar/ModalCalendar";
 import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar";
 import Cookies from "js-cookie";
-import moment from "moment";
 import { toast } from "react-toastify";
 import "../../../_assets/sass/pages/_calendar.scss";
 import CalendarCrud from "./_redux/CalendarCrud";
 import { useWindowSize } from "../../../hooks/useWindowSize";
+
+import moment from 'moment'
+import 'moment/locale/vi'
+moment.locale('vi')
 
 var todayDate = moment().startOf("day");
 // var YM = todayDate.format("YYYY-MM");
@@ -81,8 +84,6 @@ function CalendarPage(props) {
     AuthCrStockID: Auth.CrStockID,
   }));
 
-  const calendarRef = useRef();
-
   //Get Staff Full
   useEffect(() => {
     async function getStaffFull() {
@@ -140,21 +141,17 @@ function CalendarPage(props) {
     }));
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
-    const objBooking = {
-      ...values,
-      MemberID: values.MemberID.value,
-      RootIdS: values.RootIdS.map((item) => item.value).toString(),
-      UserServiceIDs:
-        values.UserServiceIDs && values.UserServiceIDs.length > 0
-          ? values.UserServiceIDs.map((item) => item.value).toString()
-          : "",
-      BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-    };
-    if (Number(AuthCrStockID) !== Number(values.StockID)) {
-      objBooking.Status = "CHUA_XAC_NHAN";
-    }
     const dataPost = {
-      booking: [objBooking],
+      booking: [{
+        ...values,
+        MemberID: values.MemberID.value,
+        RootIdS: values.RootIdS.map((item) => item.value).toString(),
+        UserServiceIDs:
+          values.UserServiceIDs && values.UserServiceIDs.length > 0
+            ? values.UserServiceIDs.map((item) => item.value).toString()
+            : "",
+        BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+      }],
     };
     try {
       await CalendarCrud.postBooking(dataPost, {
@@ -180,23 +177,29 @@ function CalendarPage(props) {
     }
   };
 
-  const onDeleteBooking = async (ID) => {
+  const onDeleteBooking = async (values) => {
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnDelete: true,
     }));
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
-    const deletePost = {
-      deletes: [
-        {
-          ID: ID,
-        },
-      ],
+    const dataPost = {
+      booking: [{
+        ...values,
+        MemberID: values.MemberID.value,
+        RootIdS: values.RootIdS.map((item) => item.value).toString(),
+        UserServiceIDs:
+          values.UserServiceIDs && values.UserServiceIDs.length > 0
+            ? values.UserServiceIDs.map((item) => item.value).toString()
+            : "",
+        BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+        Status: "TU_CHOI"
+      }]
     };
 
     try {
-      await CalendarCrud.deleteBooking(deletePost, {
+      await CalendarCrud.postBooking(dataPost, {
         CurrentStockID,
         u_id_z4aDf2,
       });
@@ -220,11 +223,6 @@ function CalendarPage(props) {
   };
 
   const getFiltersBooking = (values) => {
-    // console.log(values);
-    // console.log(moment().diff(date_time, "minutes"));
-    if (values.From) {
-      //calendarRef.current.getApi().gotoDate(moment(values.From).format("YYYY-MM-DD"));
-    }
     setFilters(values);
   };
 
@@ -249,14 +247,14 @@ function CalendarPage(props) {
         const dataBooks =
           data.books && Array.isArray(data.books)
             ? data.books
-                .map((item) => ({
-                  ...item,
-                  start: item.BookDate,
-                  title: item.RootTitles,
-                  className: `fc-event-solid-${getStatusClss(item.Status)}`,
-                  resourceId: 4737,
-                }))
-                .filter((item) => item.Status !== "TU_CHOI")
+              .map((item) => ({
+                ...item,
+                start: item.BookDate,
+                title: item.RootTitles,
+                className: `fc-event-solid-${getStatusClss(item.Status)}`,
+                resourceIds: item.UserServices && Array.isArray(item.UserServices) && item.UserServices.length > 0 ? item.UserServices.map(item => item.ID) : [],
+              }))
+              .filter((item) => item.Status !== "TU_CHOI")
             : [];
         setEvents(dataBooks);
         setLoading(false);
@@ -281,7 +279,6 @@ function CalendarPage(props) {
           />
           <div className="ezs-calendar__content">
             <FullCalendar
-              ref={calendarRef}
               themeSystem="unthemed"
               locale={viLocales}
               initialDate={TODAY}
@@ -356,20 +353,17 @@ function CalendarPage(props) {
                   Object.keys(extendedProps).length > 0
                 ) {
                   italicEl.innerHTML = `<div class="fc-title">
-                    <div>${
-                      extendedProps.AtHome
-                        ? `<i class="fas fa-home text-white font-size-xs"></i>`
-                        : ""
-                    } ${extendedProps.Member.FullName} - ${
-                    extendedProps.Member?.MobilePhone
-                  }</div>
+                    <div>${extendedProps.AtHome
+                      ? `<i class="fas fa-home text-white font-size-xs"></i>`
+                      : ""
+                    } ${extendedProps.Member.FullName} - ${extendedProps.Member?.MobilePhone
+                    }</div>
                     <div class="d-flex">
                       <div class="w-45px">${moment(
-                        extendedProps.BookDate
-                      ).format("HH:mm")} - </div>
-                      <div class="flex-1 text-truncate">${
-                        extendedProps.RootTitles
-                      }</div>
+                      extendedProps.BookDate
+                    ).format("HH:mm")} - </div>
+                      <div class="flex-1 text-truncate">${extendedProps.RootTitles
+                    }</div>
                     </div>
                   </div>`;
                 } else {
@@ -424,10 +418,11 @@ function CalendarPage(props) {
                   newFilters.To = endOfMonth;
                 }
                 if (view.type === "timeGridWeek" || view.type === "listWeek") {
-                  newFilters.From = moment(start)
-                    .add(1, "days")
-                    .format("YYYY-MM-DD");
-                  newFilters.To = moment(end).format("YYYY-MM-DD");
+                  let currentDate = moment();
+                  let weekStart = currentDate.clone().startOf('week');
+                  let weekEnd = currentDate.clone().endOf('week');
+                  newFilters.From = weekStart;
+                  newFilters.To = weekEnd;
                 }
                 if (
                   view.type !== "dayGridMonth" &&

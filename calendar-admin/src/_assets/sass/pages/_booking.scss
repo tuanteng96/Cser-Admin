@@ -1,0 +1,7 @@
+.booking {
+    height: 100vh;
+    &-body {
+        height: calc(100% - 80px);
+        overflow-y: auto;
+    }
+}

@@ -355,6 +355,20 @@
 }
 
 .datepicker-inline {
+    &.disabled {
+        .react-datepicker {
+            &:before {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: 2;
+                cursor: no-drop;
+            }
+        }
+    }
     .react-datepicker {
         border: 1px solid #EBEDF3;
         padding: 10px;
