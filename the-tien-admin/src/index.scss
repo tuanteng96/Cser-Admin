@@ -1,0 +1,89 @@
+#root {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.btn {
+  outline: none !important;
+}
+
+.mr-8px {
+  margin-right: 8px;
+}
+.mb-5px {
+  margin-bottom: 5px;
+}
+
+.iframe-cardmoney {
+  .list-moneycard {
+    padding: 15px;
+    table {
+      margin-bottom: 0;
+    }
+    .item-moneycard {
+      border-bottom: 1px dashed #e7e7e7;
+      .moneycard-title {
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: 500;
+        color: #222;
+        margin-bottom: 5px;
+      }
+    }
+    .moneycard-btn {
+      display: flex;
+      flex-direction: column;
+    }
+    .moneycard-history {
+      margin-top: 15px;
+      ul {
+        list-style: none;
+        margin: 20px 0 0;
+        padding: 0;
+        padding-left: 30px;
+        position: relative;
+        &:before {
+          content: "";
+          height: 100%;
+          width: 1px;
+          border-left: 1px dashed #cccbcd;
+          position: absolute;
+          left: 10px;
+          top: -2px;
+        }
+        li {
+          position: relative;
+          margin-bottom: 15px;
+          &:before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            border-radius: 100%;
+            left: -24px;
+            top: 6px;
+            background: #d0011b;
+          }
+          .price {
+            position: relative;
+            display: flex;
+            align-items: baseline;
+            .price-number {
+              color: #464343;
+              font-size: 14px;
+              font-weight: 700;
+            }
+            .price-time {
+              color: #a3a1a0;
+              padding-left: 5px;
+            }
+          }
+          .note {
+            color: #717070;
+          }
+        }
+      }
+    }
+  }
+}
