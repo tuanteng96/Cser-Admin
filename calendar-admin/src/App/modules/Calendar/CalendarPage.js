@@ -14,9 +14,9 @@ import "../../../_assets/sass/pages/_calendar.scss";
 import CalendarCrud from "./_redux/CalendarCrud";
 import { useWindowSize } from "../../../hooks/useWindowSize";
 
-import moment from 'moment'
-import 'moment/locale/vi'
-moment.locale('vi')
+import moment from "moment";
+import "moment/locale/vi";
+moment.locale("vi");
 
 var todayDate = moment().startOf("day");
 // var YM = todayDate.format("YYYY-MM");
@@ -91,7 +91,10 @@ function CalendarPage(props) {
         StockID: AuthCrStockID,
         All: true,
       });
-      const newData = Array.isArray(data.data) && data.data.length > 0 ? data.data.map(item => ({ id: item.id, title: item.text })) : [];
+      const newData =
+        Array.isArray(data.data) && data.data.length > 0
+          ? data.data.map((item) => ({ id: item.id, title: item.text }))
+          : [];
       setStaffFull(newData);
     }
 
@@ -142,16 +145,19 @@ function CalendarPage(props) {
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
     const dataPost = {
-      booking: [{
-        ...values,
-        MemberID: values.MemberID.value,
-        RootIdS: values.RootIdS.map((item) => item.value).toString(),
-        UserServiceIDs:
-          values.UserServiceIDs && values.UserServiceIDs.length > 0
-            ? values.UserServiceIDs.map((item) => item.value).toString()
-            : "",
-        BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-      }],
+      booking: [
+        {
+          ...values,
+          MemberID: values.MemberID.value,
+          RootIdS: values.RootIdS.map((item) => item.value).toString(),
+          UserServiceIDs:
+            values.UserServiceIDs && values.UserServiceIDs.length > 0
+              ? values.UserServiceIDs.map((item) => item.value).toString()
+              : "",
+          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+          Status: values.Status ? values.Status : "XAC_NHAN",
+        },
+      ],
     };
     try {
       await CalendarCrud.postBooking(dataPost, {
@@ -185,17 +191,19 @@ function CalendarPage(props) {
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
     const dataPost = {
-      booking: [{
-        ...values,
-        MemberID: values.MemberID.value,
-        RootIdS: values.RootIdS.map((item) => item.value).toString(),
-        UserServiceIDs:
-          values.UserServiceIDs && values.UserServiceIDs.length > 0
-            ? values.UserServiceIDs.map((item) => item.value).toString()
-            : "",
-        BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-        Status: "TU_CHOI"
-      }]
+      booking: [
+        {
+          ...values,
+          MemberID: values.MemberID.value,
+          RootIdS: values.RootIdS.map((item) => item.value).toString(),
+          UserServiceIDs:
+            values.UserServiceIDs && values.UserServiceIDs.length > 0
+              ? values.UserServiceIDs.map((item) => item.value).toString()
+              : "",
+          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+          Status: "TU_CHOI",
+        },
+      ],
     };
 
     try {
@@ -247,14 +255,19 @@ function CalendarPage(props) {
         const dataBooks =
           data.books && Array.isArray(data.books)
             ? data.books
-              .map((item) => ({
-                ...item,
-                start: item.BookDate,
-                title: item.RootTitles,
-                className: `fc-event-solid-${getStatusClss(item.Status)}`,
-                resourceIds: item.UserServices && Array.isArray(item.UserServices) && item.UserServices.length > 0 ? item.UserServices.map(item => item.ID) : [],
-              }))
-              .filter((item) => item.Status !== "TU_CHOI")
+                .map((item) => ({
+                  ...item,
+                  start: item.BookDate,
+                  title: item.RootTitles,
+                  className: `fc-event-solid-${getStatusClss(item.Status)}`,
+                  resourceIds:
+                    item.UserServices &&
+                    Array.isArray(item.UserServices) &&
+                    item.UserServices.length > 0
+                      ? item.UserServices.map((item) => item.ID)
+                      : [],
+                }))
+                .filter((item) => item.Status !== "TU_CHOI")
             : [];
         setEvents(dataBooks);
         setLoading(false);
@@ -288,6 +301,7 @@ function CalendarPage(props) {
               editable={false}
               navLinks={true}
               allDaySlot={false}
+              firstDay={1}
               views={{
                 dayGridMonth: {
                   dayMaxEvents: 2,
@@ -353,17 +367,20 @@ function CalendarPage(props) {
                   Object.keys(extendedProps).length > 0
                 ) {
                   italicEl.innerHTML = `<div class="fc-title">
-                    <div>${extendedProps.AtHome
-                      ? `<i class="fas fa-home text-white font-size-xs"></i>`
-                      : ""
-                    } ${extendedProps.Member.FullName} - ${extendedProps.Member?.MobilePhone
-                    }</div>
+                    <div>${
+                      extendedProps.AtHome
+                        ? `<i class="fas fa-home text-white font-size-xs"></i>`
+                        : ""
+                    } ${extendedProps.Member.FullName} - ${
+                    extendedProps.Member?.MobilePhone
+                  }</div>
                     <div class="d-flex">
                       <div class="w-45px">${moment(
-                      extendedProps.BookDate
-                    ).format("HH:mm")} - </div>
-                      <div class="flex-1 text-truncate">${extendedProps.RootTitles
-                    }</div>
+                        extendedProps.BookDate
+                      ).format("HH:mm")} - </div>
+                      <div class="flex-1 text-truncate">${
+                        extendedProps.RootTitles
+                      }</div>
                     </div>
                   </div>`;
                 } else {
@@ -371,23 +388,6 @@ function CalendarPage(props) {
                     Không có lịch
                   </div>`;
                 }
-                // if (view.type === "listWeek") {
-                //   italicEl.innerHTML = `<span class="fc-title font-weight-boldest">${title}</span><div class="fc-description">${extendedProps.description}</div>`;
-                // } else {
-                //   italicEl.innerHTML = `<div class="fc-title">
-                //     <div>${extendedProps.Member.FullName} - ${
-                //     extendedProps.Member.MobilePhone
-                //   }</div>
-                //     <div class="d-flex">
-                //       <div class="w-55px">${moment(
-                //         extendedProps.BookDate
-                //       ).format("HH:mm")} - </div>
-                //       <div class="w-100 text-truncate">${
-                //         extendedProps.RootTitles
-                //       }</div>
-                //     </div>
-                //   </div>`;
-                // }
                 let arrayOfDomNodes = [italicEl];
                 return {
                   domNodes: arrayOfDomNodes,
@@ -402,35 +402,36 @@ function CalendarPage(props) {
                 //Set View Calendar
                 setInitialView(view.type);
               }}
-              datesSet={({ view, start, end }) => {
+              datesSet={({ view, start, end, ...dgs }) => {
                 const newFilters = {
                   ...filters,
                   StockID: AuthCrStockID,
                 };
                 if (view.type === "dayGridMonth") {
-                  const startOfMonth = moment()
+                  const monthCurrent = moment(end).subtract(1, "month");
+                  const startOfMonth = moment(monthCurrent)
                     .startOf("month")
                     .format("YYYY-MM-DD");
-                  const endOfMonth = moment()
+                  const endOfMonth = moment(monthCurrent)
                     .endOf("month")
                     .format("YYYY-MM-DD");
                   newFilters.From = startOfMonth;
                   newFilters.To = endOfMonth;
                 }
                 if (view.type === "timeGridWeek" || view.type === "listWeek") {
-                  let currentDate = moment();
-                  let weekStart = currentDate.clone().startOf('week');
-                  let weekEnd = currentDate.clone().endOf('week');
-                  newFilters.From = weekStart;
-                  newFilters.To = weekEnd;
+                  newFilters.From = moment(start)
+                    .format("YYYY-MM-DD");
+                  newFilters.To = moment(end)
+                    .subtract(1, "days")
+                    .format("YYYY-MM-DD");
                 }
                 if (
                   view.type !== "dayGridMonth" &&
                   view.type !== "timeGridWeek" &&
                   view.type !== "listWeek"
                 ) {
-                  newFilters.From = moment(new Date()).format("YYYY-MM-DD");
-                  newFilters.To = "";
+                  newFilters.From = moment(start).format("YYYY-MM-DD");
+                  newFilters.To = moment(start).format("YYYY-MM-DD");
                 }
                 setFilters(newFilters);
               }}

@@ -15,16 +15,21 @@ import 'moment/locale/vi'
 moment.locale('vi')
 
 const StatusArr = [
-    {
-        value: "XAC_NHAN",
-        label: "Đã xác nhận",
-        color: "#3699FF",
-    },
-    {
-        value: "KHACH_DEN",
-        label: "Hoàn thành",
-        color: "#1bc5bd",
-    },
+  {
+    value: "XAC_NHAN",
+    label: "Đã xác nhận",
+    color: "#3699FF",
+  },
+  {
+    value: "KHACH_DEN",
+    label: "Hoàn thành",
+    color: "#1bc5bd",
+  },
+  {
+    value: "KHACH_KHONG_DEN",
+    label: "Khách không đến",
+    color: "#F64E60",
+  },
 ];
 
 const CustomOptionStaff = ({ children, ...props }) => {
@@ -186,7 +191,7 @@ function BookingPage() {
                             } w-auto my-0 mr-0 h-auto`}
                         disabled={btnLoading.isBtnBooking}
                     >
-                        Đặt lịch
+                        Lưu
                     </button>
                 </Fragment>
             );
@@ -212,17 +217,20 @@ function BookingPage() {
         }));
         const CurrentStockID = Cookies.get("StockID");
         const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
+        
         const dataPost = {
-            booking: [{
-                ...values,
-                MemberID: values.MemberID.value,
-                RootIdS: values.RootIdS.map((item) => item.value).toString(),
-                UserServiceIDs:
-                    values.UserServiceIDs && values.UserServiceIDs.length > 0
-                        ? values.UserServiceIDs.map((item) => item.value).toString()
-                        : "",
-                BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-            }],
+          booking: [
+            {
+              ...values,
+              MemberID: values.MemberID.value,
+              RootIdS: values.RootIdS.map((item) => item.value).toString(),
+              UserServiceIDs:
+                values.UserServiceIDs && values.UserServiceIDs.length > 0
+                  ? values.UserServiceIDs.map((item) => item.value).toString()
+                  : "",
+              BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+            },
+          ],
         };
         try {
             await CalendarCrud.postBooking(dataPost, {
@@ -250,6 +258,7 @@ function BookingPage() {
         }));
         const CurrentStockID = Cookies.get("StockID");
         const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
+        
         const dataPost = {
             booking: [{
                 ...values,
@@ -499,7 +508,7 @@ function BookingPage() {
                                             : ""
                                             } w-auto my-0 mr-0 h-auto`}
                                         disabled={btnLoading.isBtnDelete}
-                                        onClick={() => onDelete(values.ID)}
+                                        onClick={() => onDelete(values)}
                                     >
                                         Hủy lịch
                                     </button>

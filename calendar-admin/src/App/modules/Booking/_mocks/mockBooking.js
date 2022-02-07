@@ -9,7 +9,7 @@ const BookObj = {
     "RootIds": "10170",
     "GroupWithID": 200,
     "Desc": "1",
-    "Status": "CHUA_XAC_NHAN",
+    "Status": "XAC_NHAN",
     "AtHome": false,
     "UserID": 0,
     "UserServiceIDs": "",
@@ -169,7 +169,7 @@ const BookObj = {
 export const MemberBookInfoMock = {
     "MemberID": 14278,
     "ID": 0,
-    "Book": {ID: 0},
+    "Book": BookObj,
     "Member": {
         "Email": "",
         "FullName": "Huong test 20",

@@ -157,9 +157,11 @@ function ModalCalendar({
     return (
       <Dropdown>
         <Dropdown.Toggle
-          className={`bg-transparent p-0 border-0 modal-dropdown-title ${Status === "XAC_NHAN" ? "text-primary" : ""
-            } ${Status === "KHACH_KHONG_DEN" ? "text-danger" : ""} ${Status === "KHACH_DEN" ? "text-success" : ""
-            }`}
+          className={`bg-transparent p-0 border-0 modal-dropdown-title ${
+            Status === "XAC_NHAN" ? "text-primary" : ""
+          } ${Status === "KHACH_KHONG_DEN" ? "text-danger" : ""} ${
+            Status === "KHACH_DEN" ? "text-success" : ""
+          }`}
           id="dropdown-custom-1"
         >
           <span>
@@ -205,10 +207,11 @@ function ModalCalendar({
         <Fragment>
           <button
             type="submit"
-            className={`btn btn-sm btn-primary mr-2 ${btnLoading.isBtnBooking
+            className={`btn btn-sm btn-primary mr-2 ${
+              btnLoading.isBtnBooking
                 ? "spinner spinner-white spinner-right"
                 : ""
-              } w-auto my-0 mr-0 h-auto`}
+            } w-auto my-0 mr-0 h-auto`}
             disabled={btnLoading.isBtnBooking}
           >
             Đặt lịch
@@ -221,10 +224,11 @@ function ModalCalendar({
         <Fragment>
           <button
             type="submit"
-            className={`btn btn-sm btn-primary mr-2 ${btnLoading.isBtnBooking
+            className={`btn btn-sm btn-primary mr-2 ${
+              btnLoading.isBtnBooking
                 ? "spinner spinner-white spinner-right"
                 : ""
-              } w-auto my-0 mr-0 h-auto`}
+            } w-auto my-0 mr-0 h-auto`}
             disabled={btnLoading.isBtnBooking}
             onClick={() => {
               setFieldValue("Status", "XAC_NHAN", submitForm()); //submitForm()
@@ -239,8 +243,9 @@ function ModalCalendar({
       <Fragment>
         <button
           type="submit"
-          className={`btn btn-sm btn-primary mr-2 ${btnLoading.isBtnBooking ? "spinner spinner-white spinner-right" : ""
-            } w-auto my-0 mr-0 h-auto`}
+          className={`btn btn-sm btn-primary mr-2 ${
+            btnLoading.isBtnBooking ? "spinner spinner-white spinner-right" : ""
+          } w-auto my-0 mr-0 h-auto`}
           disabled={btnLoading.isBtnBooking}
         >
           Lưu
@@ -250,10 +255,11 @@ function ModalCalendar({
           className={`btn btn-sm btn-success w-auto my-0 mr-0 h-auto mr-2`}
           onClick={() => {
             onHide();
-            window.top.location.href = `/admin/?mdl=store&act=sell#${values?.MemberID?.label === "Khách vãng lai"
+            window.top.location.href = `/admin/?mdl=store&act=sell#${
+              values?.MemberID?.label === "Khách vãng lai"
                 ? "goto:member"
                 : `mp:${values?.MemberID?.value}`
-              }`;
+            }`;
           }}
         >
           Thực hiện
@@ -310,10 +316,11 @@ function ModalCalendar({
                 <div className="form-group form-group-ezs px-6 pt-3">
                   <label className="mb-1">Khách hàng</label>
                   <AsyncSelect
-                    className={`select-control ${errors.MemberID && touched.MemberID
+                    className={`select-control ${
+                      errors.MemberID && touched.MemberID
                         ? "is-invalid solid-invalid"
                         : ""
-                      }`}
+                    }`}
                     classNamePrefix="select"
                     isLoading={false}
                     isDisabled={false}
@@ -351,10 +358,11 @@ function ModalCalendar({
                     selected={values.BookDate ? new Date(values.BookDate) : ""}
                     onChange={(date) => setFieldValue("BookDate", date)}
                     onBlur={handleBlur}
-                    className={`form-control ${errors.BookDate && touched.BookDate
+                    className={`form-control ${
+                      errors.BookDate && touched.BookDate
                         ? "is-invalid solid-invalid"
                         : ""
-                      }`}
+                    }`}
                     shouldCloseOnSelect={false}
                     dateFormat="dd/MM/yyyy h:mm aa"
                     placeholderText="Chọn thời gian"
@@ -362,10 +370,11 @@ function ModalCalendar({
                     showTimeSelect
                   />
                   <Select
-                    className={`select-control mt-2 ${errors.StockID && touched.StockID
+                    className={`select-control mt-2 ${
+                      errors.StockID && touched.StockID
                         ? "is-invalid solid-invalid"
                         : ""
-                      }`}
+                    }`}
                     classNamePrefix="select"
                     value={AuthStocks.filter(
                       (item) => item.ID === values.StockID
@@ -388,16 +397,18 @@ function ModalCalendar({
                 <div className="form-group form-group-ezs border-top px-6 pt-3">
                   <label className="mb-1">Dịch vụ</label>
                   <AsyncSelect
-                    key={`${values.MemberID && values.MemberID.value
+                    key={`${
+                      values.MemberID && values.MemberID.value
                         ? values.MemberID.value
                         : "No-Member"
-                      }-${values.StockID}`}
+                    }-${values.StockID}`}
                     menuPosition="fixed"
                     isMulti
-                    className={`select-control ${errors.RootIdS && touched.RootIdS
+                    className={`select-control ${
+                      errors.RootIdS && touched.RootIdS
                         ? "is-invalid solid-invalid"
                         : ""
-                      }`}
+                    }`}
                     classNamePrefix="select"
                     isLoading={false}
                     isDisabled={false}
@@ -447,10 +458,11 @@ function ModalCalendar({
                   <label className="mb-1">Nhân viên thực hiện</label>
                   <AsyncSelect
                     key={values.StockID}
-                    className={`select-control ${errors.UserServiceIDs && touched.UserServiceIDs
+                    className={`select-control ${
+                      errors.UserServiceIDs && touched.UserServiceIDs
                         ? "is-invalid solid-invalid"
                         : ""
-                      }`}
+                    }`}
                     classNamePrefix="select"
                     isLoading={false}
                     isDisabled={false}
@@ -496,10 +508,11 @@ function ModalCalendar({
                   {values.ID && (
                     <button
                       type="button"
-                      className={`btn btn-sm btn-danger mr-2 ${btnLoading.isBtnDelete
+                      className={`btn btn-sm btn-danger mr-2 ${
+                        btnLoading.isBtnDelete
                           ? "spinner spinner-white spinner-right"
                           : ""
-                        } w-auto my-0 mr-0 h-auto`}
+                      } w-auto my-0 mr-0 h-auto`}
                       disabled={btnLoading.isBtnDelete}
                       onClick={() => onDelete(values)}
                     >
