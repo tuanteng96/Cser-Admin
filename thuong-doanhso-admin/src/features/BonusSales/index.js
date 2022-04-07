@@ -23,7 +23,7 @@ const BonusSales = () => {
         {
             ID: 1,
             Name: "Equally",
-            Title: "Áp dụng 1 hoặc nhiều NV chia đều",
+            Title: "Áp dụng 1 hoặc nhiều NV",
             Visible: false,
             IsActive: false,
             Hide: false,

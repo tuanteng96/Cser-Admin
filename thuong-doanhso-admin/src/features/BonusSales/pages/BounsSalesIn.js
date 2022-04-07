@@ -26,6 +26,9 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                     Doanh_So: Doanh_so_arr
                 }
             }) : [];
+            //console.log(OrderInfo);
+            //console.log(doanh_so);
+            //console.log(hoa_hong);
             setInitialValues((prevState) => ({
                 ...prevState,
                 BounsSalesIn: newObj

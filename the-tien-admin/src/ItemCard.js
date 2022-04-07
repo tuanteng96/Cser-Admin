@@ -52,6 +52,7 @@ export default function ItemCard({ item, getMoneyCard, index }) {
                         ? moment(item.han_dung).format("DD/MM/YYYY")
                         : <b className="text-danger">Hết hạn</b>}
                 </React.Fragment>)}</div>
+                <div>(#{item.id})</div>
             </td>
             <td>
                 <div>{formatVND(item.gia_tri_the)} </div>

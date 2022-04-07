@@ -3,7 +3,7 @@ import {
 } from '@reduxjs/toolkit'
 
 const OrderInfo = window.top.OrderBonus23Info || {
-    OrderID: 28005,
+    OrderID: 28070,
 };
 const CrStockID = window.top.CrStockID || 8975;
 
