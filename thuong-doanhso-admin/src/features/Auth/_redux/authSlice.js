@@ -3,9 +3,9 @@ import {
 } from '@reduxjs/toolkit'
 
 const OrderInfo = window.top.OrderBonus23Info || {
-    OrderID: 28070,
+  OrderID: 31581,
 };
-const CrStockID = window.top.CrStockID || 8975;
+const CrStockID = window.top?.Info?.CrStockID || 10053;
 
 const initialState = {
     ...OrderInfo,

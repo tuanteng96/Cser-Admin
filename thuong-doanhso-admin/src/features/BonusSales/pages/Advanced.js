@@ -20,6 +20,7 @@ const initialValues = {
 }
 
 function Advanced({ OrderInfo, onSubmit, loading }) {
+    console.log(OrderInfo)
     return (
         <Formik
             enableReinitialize
