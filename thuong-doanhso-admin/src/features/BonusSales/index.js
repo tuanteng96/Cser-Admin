@@ -11,6 +11,8 @@ const isVisible = (Type) => {
     return Type.some(item => item.Visible);
 }
 
+
+
 const BonusSales = () => {
     const { OrderID, CrStockID } = useSelector(({ Auth }) => (
         {
@@ -115,6 +117,19 @@ const BonusSales = () => {
             IsActive: o.ID === item.ID ? !o.IsActive : o.Visible,
         })))
     }
+
+    var THUONG_TU_DONG = () => {
+        handleType({
+          ID: 4,
+          Name: "AutoBouns",
+          Title: "Thưởng tự động",
+          Visible: false,
+          IsActive: false,
+          Hide: true,
+          className: "btn btn-danger",
+        });
+    }
+    window.THUONG_TU_DONG = THUONG_TU_DONG;
 
     const onToBack = () => {
         setType((prevState) => prevState.map(o => ({
