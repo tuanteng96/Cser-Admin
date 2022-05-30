@@ -304,43 +304,65 @@ const BonusSales = () => {
     }
 
     return (
-        <div className="container-fluid p-4">
-            <div className="mb-3">
-                {
-                    isVisible(Type) && <button className="btn btn-secondary me-2" onClick={onToBack}><i className="icon-xs ki ki-bold-arrow-back"></i> Quay lại</button>
-                }
-                {
-                    Type.filter(item => !item.Visible && !item.Hide).map((item, index) => (
-                        <button className={`${item.className} me-2`} key={index} onClick={() => handleType(item)} disabled={item.IsActive}>{item.Title}</button>
-                    ))
-                }
-            </div>
-            {
-                !isVisible(Type) &&
-                (
-                    <BounsSalesIn OrderInfo={OrderInfo} onSubmit={onSubmitUpdate} />
-                )
-            }
-
-            {
-                isVisible(Type) && (
-                    <Fragment>
-                        {getNameActive().Name === "Equally" && (
-                            <Equally OrderInfo={OrderInfo} loading={loading} onSubmit={onSubmitEqually} />
-                        )}
-                        {getNameActive().Name === "Divided" && (
-                            <Divided OrderInfo={OrderInfo} loading={loading} onSubmit={onSubmitDivided} />
-                        )}
-                        {getNameActive().Name === "Advanced" && (
-                            <Advanced OrderInfo={OrderInfo} loading={loading} onSubmit={onSubmitAdvanced} />
-                        )}
-                        {getNameActive().Name === "AutoBouns" && (
-                            <AutoBouns OrderInfo={OrderInfo} loading={loading} onSubmit={onSubmitAutoBouns} />
-                        )}
-                    </Fragment>
-                )
-            }
+      <div className="container-fluid p-4">
+        <div className="mb-3">
+          {isVisible(Type) && (
+            <button className="btn btn-secondary me-2" onClick={onToBack}>
+              <i className="icon-xs ki ki-bold-arrow-back"></i> Quay lại
+            </button>
+          )}
+          {Type.filter((item) => !item.Visible && !item.Hide).map(
+            (item, index) => (
+              <button
+                className={`${item.className} ${(item.Name === "Advanced" ||
+                  item.Name === "AutoBouns") &&
+                  "mt-2 mt-lg-0"} me-2`}
+                key={index}
+                onClick={() => handleType(item)}
+                disabled={item.IsActive}
+              >
+                {item.Title}
+              </button>
+            )
+          )}
         </div>
+        {!isVisible(Type) && (
+          <BounsSalesIn OrderInfo={OrderInfo} onSubmit={onSubmitUpdate} />
+        )}
+
+        {isVisible(Type) && (
+          <Fragment>
+            {getNameActive().Name === "Equally" && (
+              <Equally
+                OrderInfo={OrderInfo}
+                loading={loading}
+                onSubmit={onSubmitEqually}
+              />
+            )}
+            {getNameActive().Name === "Divided" && (
+              <Divided
+                OrderInfo={OrderInfo}
+                loading={loading}
+                onSubmit={onSubmitDivided}
+              />
+            )}
+            {getNameActive().Name === "Advanced" && (
+              <Advanced
+                OrderInfo={OrderInfo}
+                loading={loading}
+                onSubmit={onSubmitAdvanced}
+              />
+            )}
+            {getNameActive().Name === "AutoBouns" && (
+              <AutoBouns
+                OrderInfo={OrderInfo}
+                loading={loading}
+                onSubmit={onSubmitAutoBouns}
+              />
+            )}
+          </Fragment>
+        )}
+      </div>
     );
 }
 

@@ -325,7 +325,7 @@ function BookingPage() {
                     return (
                         <Form className="h-100 d-flex flex-column">
                             <div className="booking-body">
-                                {values.ID && <div className="form-group form-group-ezs px-6 pt-3 border-bottom">
+                                {values.ID && <div className="form-group form-group-ezs px-6 pt-3 border-bottom m-0 pb-4">
                                     <label className="mb-1">Trạng thái</label>
                                     <Select
                                         className={`select-control ${errors.Status && touched.Status
