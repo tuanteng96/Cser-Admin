@@ -43,16 +43,16 @@ const StatusArr = [
     label: "Hoàn thành",
     color: "#1bc5bd",
   },
-  // {
-  //   value: "",
-  //   label: "Đang thực hiện",
-  //   color: "#1BC5BD",
-  // },
-  // {
-  //   value: "",
-  //   label: "Hoàn thành",
-  //   color: "#B5B5C3",
-  // },
+  {
+    value: "DANG_THUC_HIEN",
+    label: "Đang thực hiện",
+    color: "#1BC5BD",
+  },
+  {
+    value: "THUC_HIEN_XONG",
+    label: "Thực hiện xong",
+    color: "#B5B5C3",
+  },
 ];
 
 // const StatusServiceArr = [
