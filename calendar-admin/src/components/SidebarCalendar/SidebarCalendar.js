@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import Select, { components } from "react-select";
+import { components } from "react-select";
 import AsyncSelect from "react-select/async";
-import DatePicker from "react-datepicker";
-import { Form, Formik, useFormikContext } from "formik";
+// import DatePicker from "react-datepicker";
+import { Field, Form, Formik, useFormikContext } from "formik";
 import CalendarCrud from "../../App/modules/Calendar/_redux/CalendarCrud";
 import { toUrlServer } from "../../helpers/AssetsHelpers";
 import { useSelector } from "react-redux";
@@ -46,12 +46,12 @@ const StatusArr = [
   {
     value: "DANG_THUC_HIEN",
     label: "Đang thực hiện",
-    color: "#1BC5BD",
+    color: "#8950FC",
   },
   {
     value: "THUC_HIEN_XONG",
     label: "Thực hiện xong",
-    color: "#B5B5C3",
+    color: "#92929e",
   },
 ];
 
@@ -93,20 +93,20 @@ const CustomOptionStaff = ({ children, ...props }) => {
   );
 };
 
-const CustomOption = ({ children, ...props }) => {
-  const { color } = props.data;
-  return (
-    <components.Option {...props}>
-      <div className="d-flex align-items-center">
-        <div
-          className="w-20px h-15px rounded-2px mr-2"
-          style={{ background: color }}
-        ></div>
-        {children}
-      </div>
-    </components.Option>
-  );
-};
+// const CustomOption = ({ children, ...props }) => {
+//   const { color } = props.data;
+//   return (
+//     <components.Option {...props}>
+//       <div className="d-flex align-items-center">
+//         <div
+//           className="w-20px h-15px rounded-2px mr-2"
+//           style={{ background: color }}
+//         ></div>
+//         {children}
+//       </div>
+//     </components.Option>
+//   );
+// };
 
 const ValueChangeListener = () => {
   const { submitForm, values } = useFormikContext();
@@ -117,6 +117,33 @@ const ValueChangeListener = () => {
 
   return null;
 };
+
+const CheckBox = (props) => (
+  <Field name={props.name}>
+    {({ field, form }) => (
+      <label className="checkbox mt-2">
+        <input
+          {...field}
+          value={props.value}
+          type="checkbox"
+          checked={field.value && field.value.includes(props.value)}
+          onChange={() => {
+            const set = new Set(field.value);
+            if (set.has(props.value)) {
+              set.delete(props.value);
+            } else {
+              set.add(props.value);
+            }
+            form.setFieldValue(field.name, (Array.from(set)));
+            form.setFieldTouched(field.name, true);
+          }} />
+        <span></span>
+        <div className="w-30px h-18px rounded-2px mr-2 ml-2" style={{ background: props.color }} />
+        <div className="font-weight-bold font-size-smm">{props.label}</div>
+      </label>
+    )}
+  </Field>
+)
 
 const initialDefault = {
   MemberID: null,
@@ -201,7 +228,7 @@ function SidebarCalendar({
         enableReinitialize
       >
         {(formikProps) => {
-          const { values, handleBlur, setFieldValue } = formikProps;
+          const { values, setFieldValue } = formikProps;
           return (
             <Form className={isFilter ? "show" : ""}>
               {/* <div className={`datepicker-inline ${initialView !== "timeGridDay" ? "disabled" : ""} mb-2`}>
@@ -285,14 +312,18 @@ function SidebarCalendar({
               </div>
               <div className="form-group form-group-ezs">
                 <label className="mb-1">Trạng thái đặt lịch</label>
-                <Select
+                {
+                  StatusArr && StatusArr.map((item, index) => (
+                    <CheckBox name="Status" label={item.label} value={item.value} color={item.color} key={index} />
+                  ))
+                }
+                {/* <Select
                   menuPlacement="top"
                   className="select-control"
                   classNamePrefix="select"
                   isLoading={false}
                   isClearable
                   isSearchable
-                  //menuIsOpen={true}
                   name="Status"
                   value={values.Status}
                   onChange={(option) =>
@@ -302,7 +333,7 @@ function SidebarCalendar({
                   placeholder="Chọn trạng thái"
                   components={{ Option: CustomOption }}
                   options={StatusArr}
-                />
+                /> */}
               </div>
               {/* <div className="form-group form-group-ezs">
                 <label className="mb-1">Trạng thái buổi dịch vụ</label>
@@ -339,9 +370,8 @@ function SidebarCalendar({
                 <div className="d-flex justify-content-between">
                   <button
                     type="submit"
-                    className={`btn btn-primary btn-sm d-block ${
-                      loading ? "spinner spinner-white spinner-right" : ""
-                    } w-auto my-0 mr-0 h-auto`}
+                    className={`btn btn-primary btn-sm d-block ${loading ? "spinner spinner-white spinner-right" : ""
+                      } w-auto my-0 mr-0 h-auto`}
                     disabled={loading}
                   >
                     Lọc ngay

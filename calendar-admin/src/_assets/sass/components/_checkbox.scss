@@ -17,7 +17,8 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        @include border-radius($border-radius);
+        border-radius: .25rem;
+        //@include border-radius($border-radius);
         &:after {
             content: '';
             border-color: transparent;
