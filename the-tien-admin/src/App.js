@@ -28,7 +28,7 @@ function App() {
       {!loading && <React.Fragment>
         {ListMoneyCard && ListMoneyCard.length > 0 ? (<React.Fragment>
           <div className="list-moneycard">
-            <div className="table-responsive">
+            <div className="table-responsive table-responsive-attr">
               <table className="table table-bordered">
                 <thead>
                   <tr>

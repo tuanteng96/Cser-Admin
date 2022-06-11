@@ -307,16 +307,14 @@ const BonusSales = () => {
       <div className="container-fluid p-4">
         <div className="mb-3">
           {isVisible(Type) && (
-            <button className="btn btn-secondary me-2" onClick={onToBack}>
+            <button className="btn btn-secondary me-2 mb-2 mb-sm-0" onClick={onToBack}>
               <i className="icon-xs ki ki-bold-arrow-back"></i> Quay lại
             </button>
           )}
           {Type.filter((item) => !item.Visible && !item.Hide).map(
             (item, index) => (
               <button
-                className={`${item.className} ${(item.Name === "Advanced" ||
-                  item.Name === "AutoBouns") &&
-                  "mt-2 mt-lg-0"} me-2`}
+                className={`${item.className} d-block d-md-inline-block w-100 w-md-auto me-2 mb-2 mb-md-0`}
                 key={index}
                 onClick={() => handleType(item)}
                 disabled={item.IsActive}

@@ -64,11 +64,11 @@ const getStatusClss = (Status) => {
   if (Status === "KHACH_DEN") {
     return "success";
   }
-  if(Status === "doing") {
+  if (Status === "doing") {
     return "info";
   }
-  if(Status === "finish") {
-    return "secondary"
+  if (Status === "finish") {
+    return "secondary";
   }
 };
 
@@ -81,7 +81,7 @@ function CalendarPage(props) {
   });
   const [isFilter, setIsFilter] = useState(false);
   const [filters, setFilters] = useState({
-    Status: ["XAC_NHAN","CHUA_XAC_NHAN","DANG_THUC_HIEN","THUC_HIEN_XONG"]
+    Status: ["XAC_NHAN", "CHUA_XAC_NHAN", "DANG_THUC_HIEN", "THUC_HIEN_XONG"],
   });
   const [initialValue, setInitialValue] = useState({});
   const [Events, setEvents] = useState([]);
@@ -117,6 +117,10 @@ function CalendarPage(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
+  const onRefresh = (callback) => {
+    getBooking(() => callback && callback());
+  };
+
   //Open Modal Booking
   const onOpenModal = () => {
     setIsModal(true);
@@ -146,7 +150,6 @@ function CalendarPage(props) {
   };
 
   const onSubmitBooking = async (values) => {
-    
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnBooking: true,
@@ -253,7 +256,10 @@ function CalendarPage(props) {
           : "",
       From: filters.From ? moment(filters.From).format("YYYY-MM-DD") : "",
       To: filters.To ? moment(filters.To).format("YYYY-MM-DD") : "",
-      Status: filters.Status && filters.Status.length > 0 ? filters.Status.join(",") : "",
+      Status:
+        filters.Status && filters.Status.length > 0
+          ? filters.Status.join(",")
+          : "",
       UserServiceIDs:
         filters.UserServiceIDs && Array.isArray(filters.UserServiceIDs)
           ? filters.UserServiceIDs.map((item) => item.value).toString()
@@ -264,32 +270,33 @@ function CalendarPage(props) {
         const dataBooks =
           data.books && Array.isArray(data.books)
             ? data.books
-              .map((item) => ({
-                ...item,
-                start: item.BookDate,
-                title: item.RootTitles,
-                className: `fc-event-solid-${getStatusClss(item.Status)}`,
-                resourceIds:
-                  item.UserServices &&
+                .map((item) => ({
+                  ...item,
+                  start: item.BookDate,
+                  title: item.RootTitles,
+                  className: `fc-event-solid-${getStatusClss(item.Status)}`,
+                  resourceIds:
+                    item.UserServices &&
                     Array.isArray(item.UserServices) &&
                     item.UserServices.length > 0
-                    ? item.UserServices.map((item) => item.ID)
-                    : [],
-              }))
-              .filter((item) => item.Status !== "TU_CHOI")
+                      ? item.UserServices.map((item) => item.ID)
+                      : [],
+                }))
+                .filter((item) => item.Status !== "TU_CHOI")
             : [];
-        const dataBooksAuto = data.osList && Array.isArray(data.osList) ? data.osList.map(item => (
-          {
-            ...item,
-            AtHome: false,
-            Member: item.member,
-            start: item.os.BookDate,
-            title: item.os.Title,
-            RootTitles: item.os.Title,
-            className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
-            resourceIds: []
-          }
-        )) : []
+        const dataBooksAuto =
+          data.osList && Array.isArray(data.osList)
+            ? data.osList.map((item) => ({
+                ...item,
+                AtHome: false,
+                Member: item.member,
+                start: item.os.BookDate,
+                title: item.os.Title,
+                RootTitles: item.os.Title,
+                className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
+                resourceIds: [],
+              }))
+            : [];
         setEvents([...dataBooks, ...dataBooksAuto]);
         setLoading(false);
         fn && fn();
@@ -374,6 +381,11 @@ function CalendarPage(props) {
               }}
               eventClick={({ event, el }) => {
                 const { _def } = event;
+                if (_def.extendedProps.os) {
+                  window?.top?.BANGLICH_BUOI &&
+                    window?.top?.BANGLICH_BUOI(_def.extendedProps, onRefresh);
+                  return;
+                }
                 setInitialValue(_def.extendedProps);
                 onOpenModal();
               }}
@@ -388,17 +400,20 @@ function CalendarPage(props) {
                   Object.keys(extendedProps).length > 0
                 ) {
                   italicEl.innerHTML = `<div class="fc-title">
-                    <div>${extendedProps.AtHome
-                      ? `<i class="fas fa-home text-white font-size-xs"></i>`
-                      : ""
-                    } ${extendedProps.Member.FullName} - ${extendedProps.Member?.MobilePhone
-                    }</div>
+                    <div>${
+                      extendedProps.AtHome
+                        ? `<i class="fas fa-home text-white font-size-xs"></i>`
+                        : ""
+                    } ${extendedProps.Member.FullName} - ${
+                    extendedProps.Member?.MobilePhone
+                  }</div>
                     <div class="d-flex">
                       <div class="w-45px">${moment(
-                      extendedProps.BookDate
-                    ).format("HH:mm")} - </div>
-                      <div class="flex-1 text-truncate">${extendedProps.RootTitles
-                    }</div>
+                        extendedProps.BookDate
+                      ).format("HH:mm")} - </div>
+                      <div class="flex-1 text-truncate">${
+                        extendedProps.RootTitles
+                      }</div>
                     </div>
                   </div>`;
                 } else {
@@ -437,8 +452,7 @@ function CalendarPage(props) {
                   newFilters.To = endOfMonth;
                 }
                 if (view.type === "timeGridWeek" || view.type === "listWeek") {
-                  newFilters.From = moment(start)
-                    .format("YYYY-MM-DD");
+                  newFilters.From = moment(start).format("YYYY-MM-DD");
                   newFilters.To = moment(end)
                     .subtract(1, "days")
                     .format("YYYY-MM-DD");
