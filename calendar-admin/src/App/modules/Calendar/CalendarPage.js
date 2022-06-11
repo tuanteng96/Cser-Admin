@@ -67,7 +67,7 @@ const getStatusClss = (Status) => {
   if (Status === "doing") {
     return "info";
   }
-  if (Status === "finish") {
+  if (Status === "done") {
     return "secondary";
   }
 };
@@ -292,7 +292,7 @@ function CalendarPage(props) {
                 Member: item.member,
                 start: item.os.BookDate,
                 title: item.os.Title,
-                RootTitles: item.os.Title,
+                RootTitles: item.os.ProdService2 || item.os.ProdService,
                 className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
                 resourceIds: [],
               }))
