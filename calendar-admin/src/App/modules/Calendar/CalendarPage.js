@@ -295,7 +295,10 @@ function CalendarPage(props) {
                 title: item.os.Title,
                 RootTitles: item.os.ProdService2 || item.os.ProdService,
                 className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
-                resourceIds: [],
+                resourceIds:
+                  item.staffs && Array.isArray(item.staffs)
+                    ? item.staffs.map((staf) => staf.ID)
+                    : [],
               }))
             : [];
         setEvents([...dataBooks, ...dataBooksAuto]);
