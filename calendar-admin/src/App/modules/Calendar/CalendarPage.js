@@ -291,6 +291,7 @@ function CalendarPage(props) {
                 AtHome: false,
                 Member: item.member,
                 start: item.os.BookDate,
+                BookDate: item.os.BookDate,
                 title: item.os.Title,
                 RootTitles: item.os.ProdService2 || item.os.ProdService,
                 className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
