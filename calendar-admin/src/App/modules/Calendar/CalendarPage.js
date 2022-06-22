@@ -5,6 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import interactionPlugin from "@fullcalendar/interaction";
 import ModalCalendar from "../../../components/ModalCalendar/ModalCalendar";
 import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar";
@@ -51,8 +52,10 @@ const viLocales = {
   noEventsText: "Không có dịch vụ",
 };
 
-const getStatusClss = (Status) => {
+const getStatusClss = (Status, item) => {
+  const isAuto = item?.Desc && item.Desc.toUpperCase().indexOf("TỰ ĐỘNG ĐẶT LỊCH");
   if (Status === "XAC_NHAN") {
+    if (isAuto !== "" && isAuto > -1) return "primary1";
     return "primary";
   }
   if (Status === "CHUA_XAC_NHAN") {
@@ -274,7 +277,7 @@ function CalendarPage(props) {
                   ...item,
                   start: item.BookDate,
                   title: item.RootTitles,
-                  className: `fc-event-solid-${getStatusClss(item.Status)}`,
+                  className: `fc-event-solid-${getStatusClss(item.Status, item)}`,
                   resourceIds:
                     item.UserServices &&
                     Array.isArray(item.UserServices) &&
@@ -347,13 +350,24 @@ function CalendarPage(props) {
                   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                   scrollTime: moment(new Date()).format("HH:mm"),
                 },
-                resourceTimeGridDay: {
+                // resourceTimeGridDay: {
+                //   type: "resourceTimeline",
+                //   buttonText: "Nhân viên",
+                //   resourceAreaHeaderContent: () => "Danh sách nhân viên",
+                //   nowIndicator: true,
+                //   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                //   scrollTime: moment(new Date()).format("HH:mm"),
+                //   //duration: { days: 4 },
+                // },
+                resourceTimelineDay: {
                   type: "resourceTimeline",
                   buttonText: "Nhân viên",
-                  resourceAreaHeaderContent: () => "Danh sách nhân viên",
+                  resourceAreaHeaderContent: () => "Nhân viên",
                   nowIndicator: true,
                   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                   scrollTime: moment(new Date()).format("HH:mm"),
+                  resourceAreaWidth: "160px",
+                  slotMinWidth: "50",
                   //duration: { days: 4 },
                 },
               }}
@@ -363,6 +377,7 @@ function CalendarPage(props) {
                 timeGridPlugin,
                 listPlugin,
                 resourceTimeGridPlugin,
+                resourceTimelinePlugin,
               ]}
               resources={StaffFull}
               events={Events}
@@ -370,7 +385,7 @@ function CalendarPage(props) {
                 left: "prev,next today",
                 center: "title",
                 right:
-                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay",
+                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimelineDay", //resourceTimeGridDay
               }}
               selectable={true}
               selectMirror={true}
@@ -404,13 +419,15 @@ function CalendarPage(props) {
                   Object.keys(extendedProps).length > 0
                 ) {
                   italicEl.innerHTML = `<div class="fc-title">
-                    <div>${
+                    <div><span class="fullname">${
                       extendedProps.AtHome
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
                         : ""
-                    } ${extendedProps.Member.FullName} - ${
+                    } ${
+                    extendedProps.Member.FullName
+                  }</span><span class="d-none d-md-inline"> - ${
                     extendedProps.Member?.MobilePhone
-                  }</div>
+                  }</span></div>
                     <div class="d-flex">
                       <div class="w-45px">${moment(
                         extendedProps.BookDate

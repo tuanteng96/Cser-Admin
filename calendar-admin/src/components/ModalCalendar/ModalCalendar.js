@@ -313,8 +313,8 @@ function ModalCalendar({
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body className="p-0">
-                <div className="form-group form-group-ezs px-6 pt-3">
-                  <label className="mb-1">Khách hàng</label>
+                <div className="form-group form-group-ezs px-6 pt-3 mb-3">
+                  <label className="mb-1 d-none d-md-block">Khách hàng</label>
                   <AsyncSelect
                     className={`select-control ${
                       errors.MemberID && touched.MemberID
@@ -346,8 +346,8 @@ function ModalCalendar({
                     }
                   />
                 </div>
-                <div className="form-group form-group-ezs px-6 pt-3 border-top">
-                  <label className="mb-1 d-flex justify-content-between">
+                <div className="form-group form-group-ezs px-6 pt-3 mb-3 border-top">
+                  <label className="mb-1 d-none d-md-flex justify-content-between">
                     Thời gian / Cơ sở
                     {/* <span className="btn btn-label btn-light-primary label-inline cursor-pointer">
                       Lặp lại
@@ -394,8 +394,8 @@ function ModalCalendar({
                     onBlur={handleBlur}
                   />
                 </div>
-                <div className="form-group form-group-ezs border-top px-6 pt-3">
-                  <label className="mb-1">Dịch vụ</label>
+                <div className="form-group form-group-ezs border-top px-6 pt-3 mb-3">
+                  <label className="mb-1 d-none d-md-block">Dịch vụ</label>
                   <AsyncSelect
                     key={`${
                       values.MemberID && values.MemberID.value
@@ -454,8 +454,10 @@ function ModalCalendar({
                     </span>
                   </div>
                 </div>
-                <div className="form-group form-group-ezs px-6 pt-3 border-top">
-                  <label className="mb-1">Nhân viên thực hiện</label>
+                <div className="form-group form-group-ezs px-6 pt-3 mb-3 border-top">
+                  <label className="mb-1 d-none d-md-block">
+                    Nhân viên thực hiện
+                  </label>
                   <AsyncSelect
                     key={values.StockID}
                     className={`select-control ${
@@ -495,7 +497,7 @@ function ModalCalendar({
                     name="Desc"
                     value={values.Desc}
                     className="form-control mt-2"
-                    rows="5"
+                    rows="2"
                     placeholder="Nhập ghi chú"
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -519,6 +521,13 @@ function ModalCalendar({
                       Hủy lịch
                     </button>
                   )}
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-secondary d-md-none"
+                    onClick={onHide}
+                  >
+                    Đóng
+                  </button>
                 </div>
                 <div></div>
               </Modal.Footer>

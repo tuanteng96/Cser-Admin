@@ -173,7 +173,7 @@
 
 // Open state
 .modal-open {
-    overflow: auto !important;
+    overflow: hidden !important;
     padding: 0 !important;
 }
 
@@ -187,6 +187,9 @@
     .modal-content {
         max-height: 100vh;
         border-radius: 0;
+    }
+    @media (max-width: 767px) {
+        max-height: calc(100vh);
     }
 }
 
