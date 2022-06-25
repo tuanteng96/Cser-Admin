@@ -139,16 +139,20 @@ const CheckBox = (props) => (
             } else {
               set.add(props.value);
             }
-            form.setFieldValue(field.name, (Array.from(set)));
+            form.setFieldValue(field.name, Array.from(set));
             form.setFieldTouched(field.name, true);
-          }} />
-        <span></span>
-        <div className="w-30px h-18px rounded-2px mr-2 ml-2" style={{ background: props.color }} />
-        <div className="font-weight-bold font-size-smm">{props.label}</div>
+          }}
+        />
+        <span style={{ background: props.color }}></span>
+        {/* <div
+          className="w-30px h-18px rounded-2px mr-2 ml-2"
+          style={{ background: props.color }}
+        /> */}
+        <div className="font-weight-bold font-size-smm ml-2">{props.label}</div>
       </label>
     )}
   </Field>
-)
+);
 
 const initialDefault = {
   MemberID: null,

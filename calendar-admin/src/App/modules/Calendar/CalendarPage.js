@@ -84,7 +84,7 @@ function CalendarPage(props) {
   });
   const [isFilter, setIsFilter] = useState(false);
   const [filters, setFilters] = useState({
-    Status: ["XAC_NHAN", "CHUA_XAC_NHAN", "DANG_THUC_HIEN", "THUC_HIEN_XONG"],
+    Status: ["XAC_NHAN","XAC_NHAN_TU_DONG","CHUA_XAC_NHAN", "DANG_THUC_HIEN", "THUC_HIEN_XONG"],
   });
   const [initialValue, setInitialValue] = useState({});
   const [Events, setEvents] = useState([]);
@@ -249,6 +249,14 @@ function CalendarPage(props) {
     setFilters(values);
   };
 
+  const checkStar = (item) => {
+    if (item?.Member?.MobilePhone !== "0000000000") return "";
+    if (item?.Member?.MobilePhone === "0000000000" && item?.IsNew) return "**"
+    else {
+      return "*"
+    }
+  }
+
   const getBooking = (fn) => {
     !loading && setLoading(true);
     const newFilters = {
@@ -277,13 +285,21 @@ function CalendarPage(props) {
                   ...item,
                   start: item.BookDate,
                   title: item.RootTitles,
-                  className: `fc-event-solid-${getStatusClss(item.Status, item)}`,
+                  className: `fc-event-solid-${getStatusClss(
+                    item.Status,
+                    item
+                  )}`,
                   resourceIds:
                     item.UserServices &&
                     Array.isArray(item.UserServices) &&
                     item.UserServices.length > 0
                       ? item.UserServices.map((item) => item.ID)
                       : [],
+                  Member: {
+                    FullName: item?.FullName || item?.Member?.FullName,
+                    MobilePhone: item?.Phone || item?.Member?.MobilePhone,
+                  },
+                  Star: checkStar(item)
                 }))
                 .filter((item) => item.Status !== "TU_CHOI")
             : [];
@@ -423,7 +439,7 @@ function CalendarPage(props) {
                       extendedProps.AtHome
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
                         : ""
-                    } ${
+                    } ${extendedProps.Star ? `(${extendedProps.Star})` : ""} ${
                     extendedProps.Member.FullName
                   }</span><span class="d-none d-md-inline"> - ${
                     extendedProps.Member?.MobilePhone

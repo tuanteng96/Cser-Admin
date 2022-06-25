@@ -66,9 +66,14 @@ function ModalCalendar({
   useEffect(() => {
     if (show) {
       if (initialValue.ID) {
+        console.log(initialValue);
         setInitialValues((prevState) => ({
           ...prevState,
           ID: initialValue.ID,
+          MemberCurrent: {
+            FullName: initialValue.FullName || initialValue.Member.FullName,
+            Phone: initialValue.Phone || initialValue.Member.MobilePhone,
+          },
           MemberID: {
             label: initialValue.Member.FullName,
             value: initialValue.Member.ID,
@@ -345,6 +350,20 @@ function ModalCalendar({
                         : "Không tìm thấy khách hàng"
                     }
                   />
+                  <div className="d-flex mt-2 font-size-xs">
+                    <div className="mr-4">
+                      Khách hàng :
+                      <span className="font-weight-bold pl-1">
+                        {values.MemberCurrent?.FullName}
+                      </span>
+                    </div>
+                    <div>
+                      Số điện thoại :
+                      <span className="font-weight-bold pl-1">
+                        {values.MemberCurrent?.Phone}
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 <div className="form-group form-group-ezs px-6 pt-3 mb-3 border-top">
                   <label className="mb-1 d-none d-md-flex justify-content-between">
