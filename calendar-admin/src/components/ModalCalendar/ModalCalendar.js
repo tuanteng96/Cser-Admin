@@ -66,7 +66,6 @@ function ModalCalendar({
   useEffect(() => {
     if (show) {
       if (initialValue.ID) {
-        console.log(initialValue);
         setInitialValues((prevState) => ({
           ...prevState,
           ID: initialValue.ID,

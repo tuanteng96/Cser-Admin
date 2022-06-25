@@ -295,7 +295,7 @@ function CalendarPage(props) {
                     item.UserServices.length > 0
                       ? item.UserServices.map((item) => item.ID)
                       : [],
-                  Member: {
+                  MemberCurrent: {
                     FullName: item?.FullName || item?.Member?.FullName,
                     MobilePhone: item?.Phone || item?.Member?.MobilePhone,
                   },
@@ -309,6 +309,10 @@ function CalendarPage(props) {
                 ...item,
                 AtHome: false,
                 Member: item.member,
+                MemberCurrent: {
+                  FullName: item?.member?.FullName,
+                  MobilePhone: item?.member?.MobilePhone,
+                },
                 start: item.os.BookDate,
                 BookDate: item.os.BookDate,
                 title: item.os.Title,
@@ -365,6 +369,7 @@ function CalendarPage(props) {
                   nowIndicator: true,
                   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                   scrollTime: moment(new Date()).format("HH:mm"),
+                  slotMinWidth: "50",
                 },
                 // resourceTimeGridDay: {
                 //   type: "resourceTimeline",
@@ -440,9 +445,9 @@ function CalendarPage(props) {
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
                         : ""
                     } ${extendedProps.Star ? `(${extendedProps.Star})` : ""} ${
-                    extendedProps.Member.FullName
+                    extendedProps.MemberCurrent.FullName
                   }</span><span class="d-none d-md-inline"> - ${
-                    extendedProps.Member?.MobilePhone
+                    extendedProps.MemberCurrent?.MobilePhone
                   }</span></div>
                     <div class="d-flex">
                       <div class="w-45px">${moment(
