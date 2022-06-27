@@ -29,6 +29,11 @@ const StatusArr = [
     color: "#3699FF",
   },
   {
+    value: "XAC_NHAN_TU_DONG",
+    label: "Đã xác nhận (Tự động)",
+    color: "rgb(0 122 247)",
+  },
+  {
     value: "CHUA_XAC_NHAN",
     label: "Chưa xác nhận",
     color: "#FFA800",
@@ -134,16 +139,20 @@ const CheckBox = (props) => (
             } else {
               set.add(props.value);
             }
-            form.setFieldValue(field.name, (Array.from(set)));
+            form.setFieldValue(field.name, Array.from(set));
             form.setFieldTouched(field.name, true);
-          }} />
-        <span></span>
-        <div className="w-30px h-18px rounded-2px mr-2 ml-2" style={{ background: props.color }} />
-        <div className="font-weight-bold font-size-smm">{props.label}</div>
+          }}
+        />
+        <span style={{ background: props.color }}></span>
+        {/* <div
+          className="w-30px h-18px rounded-2px mr-2 ml-2"
+          style={{ background: props.color }}
+        /> */}
+        <div className="font-weight-bold font-size-smm ml-2">{props.label}</div>
       </label>
     )}
   </Field>
-)
+);
 
 const initialDefault = {
   MemberID: null,
@@ -206,13 +215,13 @@ function SidebarCalendar({
     <div className="ezs-calendar__sidebar">
       <div className="d-flex justify-content-between">
         <button
-          className="btn btn-primary btn-sm h-42px mb-24px"
+          className="btn btn-primary btn-sm h-42px mb-3 mb-md-24px"
           onClick={onOpenModal}
         >
           Tạo đặt lịch mới
         </button>
         <button
-          className="btn btn-info btn-sm h-42px mb-24px ml-2 d-lg-none"
+          className="btn btn-info btn-sm h-42px mb-3 mb-md-24px ml-2 d-lg-none"
           onClick={onOpenFilter}
         >
           Bộ lọc
@@ -312,11 +321,16 @@ function SidebarCalendar({
               </div>
               <div className="form-group form-group-ezs">
                 <label className="mb-1">Trạng thái đặt lịch</label>
-                {
-                  StatusArr && StatusArr.map((item, index) => (
-                    <CheckBox name="Status" label={item.label} value={item.value} color={item.color} key={index} />
-                  ))
-                }
+                {StatusArr &&
+                  StatusArr.map((item, index) => (
+                    <CheckBox
+                      name="Status"
+                      label={item.label}
+                      value={item.value}
+                      color={item.color}
+                      key={index}
+                    />
+                  ))}
                 {/* <Select
                   menuPlacement="top"
                   className="select-control"
@@ -370,8 +384,9 @@ function SidebarCalendar({
                 <div className="d-flex justify-content-between">
                   <button
                     type="submit"
-                    className={`btn btn-primary btn-sm d-block ${loading ? "spinner spinner-white spinner-right" : ""
-                      } w-auto my-0 mr-0 h-auto`}
+                    className={`btn btn-primary btn-sm d-block ${
+                      loading ? "spinner spinner-white spinner-right" : ""
+                    } w-auto my-0 mr-0 h-auto`}
                     disabled={loading}
                   >
                     Lọc ngay

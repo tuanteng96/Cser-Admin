@@ -557,6 +557,31 @@
                 }
             }
         }
+        .fc-resourceTimelineDay-view {
+            .fc-datagrid-cell-cushion {
+                padding: 8px 12px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            .fc-datagrid-cell-main {
+                font-size: 14px;
+                font-weight: 600;
+            }
+            .fc-scrollgrid-section-header {
+                .fc-datagrid-cell-main {
+                    text-transform: uppercase;
+                    font-size: 15px;
+                    color: #3699ff;
+                }
+            }
+        }
+        .fc-event-solid-primary1 {
+            background: #007af7;
+            .fc-title {
+                color: #fff;
+            }
+        }
     }
     @include media-breakpoint-down(md) {
         .fc {
@@ -567,8 +592,7 @@
                         .fc-button-group {
                             button {
                                 &:nth-child(1),
-                                &:nth-child(2),
-                                &:nth-child(5) {
+                                &:nth-child(2) {
                                     display: none;
                                 }
                             }
@@ -576,19 +600,43 @@
                     }
                 }
             }
+            .fullname {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                width: 100%;
+                display: block;
+            }
         }
     }
     @include media-breakpoint-down(sm) {
         .fc {
             .fc-header-toolbar {
-                flex-direction: column;
+                flex-wrap: wrap;
+                justify-content: center !important;
+                //flex-direction: column;
                 .fc-toolbar-chunk:first-child {
                     order: 2;
-                    margin-top: 15px
+                    text-align: center;
+                    margin-right: 8px;
+                    >.fc-today-button {
+                        display: none;
+                    }
                 }
                 .fc-toolbar-chunk:nth-child(2) {
-                    margin-bottom: 15px
+                    order: 0;
+                    width: 100%;
+                    margin-bottom: 8px;
+                    .fc-toolbar-title {
+                        text-align: center;
+                    }
                 }
+                .fc-toolbar-chunk:nth-child(3) {
+                    order: 2
+                }
+            }
+            .fc-toolbar .fc-button {
+                padding: 0 12px;
             }
         }
     }
