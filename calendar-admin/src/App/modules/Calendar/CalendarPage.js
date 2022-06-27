@@ -5,6 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
+import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin from "@fullcalendar/interaction";
 import ModalCalendar from "../../../components/ModalCalendar/ModalCalendar";
 import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar";
@@ -270,36 +271,36 @@ function CalendarPage(props) {
         const dataBooks =
           data.books && Array.isArray(data.books)
             ? data.books
-                .map((item) => ({
-                  ...item,
-                  start: item.BookDate,
-                  title: item.RootTitles,
-                  className: `fc-event-solid-${getStatusClss(item.Status)}`,
-                  resourceIds:
-                    item.UserServices &&
+              .map((item) => ({
+                ...item,
+                start: item.BookDate,
+                title: item.RootTitles,
+                className: `fc-event-solid-${getStatusClss(item.Status)}`,
+                resourceIds:
+                  item.UserServices &&
                     Array.isArray(item.UserServices) &&
                     item.UserServices.length > 0
-                      ? item.UserServices.map((item) => item.ID)
-                      : [],
-                }))
-                .filter((item) => item.Status !== "TU_CHOI")
+                    ? item.UserServices.map((item) => item.ID)
+                    : [],
+              }))
+              .filter((item) => item.Status !== "TU_CHOI")
             : [];
         const dataBooksAuto =
           data.osList && Array.isArray(data.osList)
             ? data.osList.map((item) => ({
-                ...item,
-                AtHome: false,
-                Member: item.member,
-                start: item.os.BookDate,
-                BookDate: item.os.BookDate,
-                title: item.os.Title,
-                RootTitles: item.os.ProdService2 || item.os.ProdService,
-                className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
-                resourceIds:
-                  item.staffs && Array.isArray(item.staffs)
-                    ? item.staffs.map((staf) => staf.ID)
-                    : [],
-              }))
+              ...item,
+              AtHome: false,
+              Member: item.member,
+              start: item.os.BookDate,
+              BookDate: item.os.BookDate,
+              title: item.os.Title,
+              RootTitles: item.os.ProdService2 || item.os.ProdService,
+              className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
+              resourceIds:
+                item.staffs && Array.isArray(item.staffs)
+                  ? item.staffs.map((staf) => staf.ID)
+                  : [],
+            }))
             : [];
         setEvents([...dataBooks, ...dataBooksAuto]);
         setLoading(false);
@@ -354,7 +355,16 @@ function CalendarPage(props) {
                   nowIndicator: true,
                   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                   scrollTime: moment(new Date()).format("HH:mm"),
+                  datesAboveResources: true
                   //duration: { days: 4 },
+                },
+                resourceTimelineDay: {
+                  type: "resourceTimeline",
+                  buttonText: "Nhân viên",
+                  resourceAreaHeaderContent: () => "Danh sách nhân viên",
+                  nowIndicator: true,
+                  now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                  scrollTime: moment(new Date()).format("HH:mm"),
                 },
               }}
               plugins={[
@@ -363,6 +373,7 @@ function CalendarPage(props) {
                 timeGridPlugin,
                 listPlugin,
                 resourceTimeGridPlugin,
+                resourceTimelinePlugin
               ]}
               resources={StaffFull}
               events={Events}
@@ -370,7 +381,7 @@ function CalendarPage(props) {
                 left: "prev,next today",
                 center: "title",
                 right:
-                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay",
+                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay,resourceTimelineDay", //resourceTimeGridDay
               }}
               selectable={true}
               selectMirror={true}
@@ -404,20 +415,17 @@ function CalendarPage(props) {
                   Object.keys(extendedProps).length > 0
                 ) {
                   italicEl.innerHTML = `<div class="fc-title">
-                    <div>${
-                      extendedProps.AtHome
-                        ? `<i class="fas fa-home text-white font-size-xs"></i>`
-                        : ""
-                    } ${extendedProps.Member.FullName} - ${
-                    extendedProps.Member?.MobilePhone
-                  }</div>
+                    <div>${extendedProps.AtHome
+                      ? `<i class="fas fa-home text-white font-size-xs"></i>`
+                      : ""
+                    } ${extendedProps.Member.FullName} - ${extendedProps.Member?.MobilePhone
+                    }</div>
                     <div class="d-flex">
                       <div class="w-45px">${moment(
-                        extendedProps.BookDate
-                      ).format("HH:mm")} - </div>
-                      <div class="flex-1 text-truncate">${
-                        extendedProps.RootTitles
-                      }</div>
+                      extendedProps.BookDate
+                    ).format("HH:mm")} - </div>
+                      <div class="flex-1 text-truncate">${extendedProps.RootTitles
+                    }</div>
                     </div>
                   </div>`;
                 } else {
